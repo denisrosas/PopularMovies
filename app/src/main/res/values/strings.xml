@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Popular Movies</string>
+    <string name="tmdb_api_key">YOUR API KEY HERE</string>
+    <string name="sort_by_popularity">Sort By Popularity</string>
+    <string name="sort_by_top_rated">Sort By Top Rated</string>
+    <string name="back_menu">Back</string>
+    <string name="check_internet">Please check your Internet Connection</string>
+    <string name="json_tmdb_id">id</string>
+    <string name="json_tmdb_voteavarage">vote_average</string>
+    <string name="json_tmdb_title">title</string>
+    <string name="json_tmdb_posterpath">poster_path</string>
+    <string name="json_tmdb_overview">overview</string>
+    <string name="json_tmdb_release_date">release_date</string>
+    <string name="json_tmdb_vote_count">vote_count</string>
+    <string name="release_date">Release Date:</string>
+</resources>

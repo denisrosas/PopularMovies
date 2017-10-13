@@ -1,0 +1,40 @@
+Guia pra implementar o projeto
+https://docs.google.com/document/d/1ZlN1fUsCSKuInLECcJkslIqvpKlP7jWL2TP9m6UiA6I/pub?embedded=true
+
+link pra acessar minha chave:
+
+https://www.themoviedb.org/talk/59dd806dc3a36861df08b33b
+
+http://api.themoviedb.org/3/movie/popular?api_key=e71f7ee3fc9d7b91b4d5b86ef93d2f0c
+http://api.themoviedb.org/3/movie/top_rated?api_key=e71f7ee3fc9d7b91b4d5b86ef93d2f0c
+
+https://api.themoviedb.org/3/discover/movie?api_key=e71f7ee3fc9d7b91b4d5b86ef93d2f0c&language=en-US&sort_by=vote_average.desc&include_adult=false&include_video=false&page=1
+
+https://api.themoviedb.org/3/discover/movie?api_key=e71f7ee3fc9d7b91b4d5b86ef93d2f0c&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1
+
+
+http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg 
+
+
+{"page":1,"total_results":7142,"total_pages":358,"results":
+[
+	{
+	"vote_count":644,
+	"id":19404,
+	"video":false,
+	"vote_average":9,
+	"title":"Dilwale Dulhania Le Jayenge",
+	"popularity":33.351928,
+	"poster_path":"\/2gvbZMtV1Zsl7FedJa5ysbpBx2G.jpg",
+	"original_language":"hi",
+	"original_title":"Dilwale Dulhania Le Jayenge",
+	"genre_ids":[35,18,10749],"backdrop_path":"\/nl79FQ8xWZkhL3rDr1v2RFFR6J0.jpg",
+	"adult":false,
+	"overview":"Raj is a rich, carefree, happy-go-lucky second generation NRI. Simran is the daughter of Chaudhary Baldev Singh, who in spite of being an NRI is very strict about adherence to Indian values. Simran has left for India to be married to her childhood fiancé. Raj leaves for India with a mission at his hands, to claim his lady love under the noses of her whole family. Thus begins a saga.",
+	"release_date":"1995-10-20"
+	},
+	{"vote_count":8341,"id":278,"video":false,"vote_average":8.5,"title":"The Shawshank 
+	
+	
+	
+	http://image.tmdb.org/t/p/w185//2gvbZMtV1Zsl7FedJa5ysbpBx2G.jpg
