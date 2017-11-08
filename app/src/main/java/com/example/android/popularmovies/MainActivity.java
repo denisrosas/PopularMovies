@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
         //this app was designed to portrait mode only
         setNumColumsBasedOnDisplaySize();
 
-        MoviesInfoFromTMDB downloadTask = new MoviesInfoFromTMDB();
+        MoviesInfoFromTMDB downloadTask = new MoviesInfoFromTMDB(this);
 
         downloadTask.execute(this);
     }
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
                 sortPopularity = false;
             }
 
-            MoviesInfoFromTMDB downloadTask = new MoviesInfoFromTMDB();
+            MoviesInfoFromTMDB downloadTask = new MoviesInfoFromTMDB(this);
             downloadTask.execute(this);
 
             (findViewById(R.id.progressBar)).setVisibility(View.VISIBLE);

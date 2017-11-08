@@ -36,7 +36,8 @@ public class MovieDetailsActivity extends AppCompatActivity {
 //                        +"\nvoteAvarage: "+voteAvarage
 //                        +"\nvoteCount: "+voteCount);
 
-        MovieDetails movieDetails = new MovieDetails(voteCount, 0, voteAvarage, extras_string[0], extras_string[1], extras_string[2], extras_string[3]);
+        //TODO - Corrigir ultimo parametro. i.getExtra("movie_trailers");
+        MovieDetails movieDetails = new MovieDetails(voteCount, 0, voteAvarage, extras_string[0], extras_string[1], extras_string[2], extras_string[3], extras_string);
 
         Uri image_uri = returnImageUri(movieDetails.getPosterPath());
 

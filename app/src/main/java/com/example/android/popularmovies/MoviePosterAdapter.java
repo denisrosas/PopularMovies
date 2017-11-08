@@ -1,5 +1,6 @@
 package com.example.android.popularmovies;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
@@ -13,7 +14,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-import static com.example.android.popularmovies.MoviesInfoFromTMDB.context;
+//import static com.example.android.popularmovies.MoviesInfoFromTMDB.context;
 
 public class MoviePosterAdapter extends RecyclerView.Adapter <MoviePosterAdapter.ImageViewHolder>{
 
@@ -21,9 +22,11 @@ public class MoviePosterAdapter extends RecyclerView.Adapter <MoviePosterAdapter
     public static final String TMDB_BASE_URL = "http://image.tmdb.org/t/p/";
     public static String TMDB_LIST_IMAGE_SIZE = "";
     public static String TMDB_DETAIL_IMAGE_SIZE = "";
+    private Context activityContext;
 
-    public MoviePosterAdapter(ArrayList<MovieDetails> movieList){
+    public MoviePosterAdapter(ArrayList<MovieDetails> movieList, Context context){
         localMovieList = movieList;
+        activityContext = context;
     }
 
     @Override
@@ -47,12 +50,12 @@ public class MoviePosterAdapter extends RecyclerView.Adapter <MoviePosterAdapter
                 || localMovieList.get(position).getPosterPath().endsWith(".png")) {
 
             Uri builtUri = returnImageUri(localMovieList.get(position).getPosterPath());
-            Picasso.with(context).load(builtUri.toString()).into(iv_holder.imageView);
+            Picasso.with(activityContext).load(builtUri.toString()).into(iv_holder.imageView);
             //Log.i("denis", "link da imagem: " + builtUri.toString());
 
         } else {
             //if it's not image file, get fail image from Resources
-            Picasso.with(context).load(R.drawable.erro_loading_image).into(iv_holder.imageView);
+            Picasso.with(activityContext).load(R.drawable.erro_loading_image).into(iv_holder.imageView);
             Log.i("denis", "Fail to load the image.");
 
         }
@@ -64,7 +67,7 @@ public class MoviePosterAdapter extends RecyclerView.Adapter <MoviePosterAdapter
 
                 Log.i("denis OnClickListener", "a tag da view eh "+view.getTag());
 
-                Intent i = new Intent(context, MovieDetailsActivity.class);
+                Intent i = new Intent(activityContext, MovieDetailsActivity.class);
 
                 //We're sending 3 vectors
                 MovieDetails movieDetails = localMovieList.get(Integer.valueOf((String)view.getTag()));
@@ -76,7 +79,7 @@ public class MoviePosterAdapter extends RecyclerView.Adapter <MoviePosterAdapter
                 i.putExtra("voteAvarage", voteAvarage);
                 i.putExtra("voteCount", voteCount);
 
-                context.startActivity(i);
+                activityContext.startActivity(i);
 
             }
         });

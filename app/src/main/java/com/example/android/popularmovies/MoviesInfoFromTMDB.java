@@ -22,34 +22,47 @@ import java.util.ArrayList;
 
 public class MoviesInfoFromTMDB extends AsyncTask<Context, Void, ArrayList<MovieDetails>> {
 
-    public static Context context;
+    private Context activityContext;
+    public static final int REVIEW_AUTHOR_INDEX = 0;
+    public static final int REVIEW_CONTENT_INDEX = 1;
+
+    MoviesInfoFromTMDB(Context context){
+        activityContext = context;
+    }
 
     @Override
     protected ArrayList<MovieDetails> doInBackground(Context... contexts) {
+
+        //ArrayList<MovieDetails> moviesArrayList = new ArrayList<MovieDetails>();
 
         if(contexts.length==0) {
             return null;
         }
 
-        context = contexts[0];
+        activityContext = contexts[0];
 
         if(isNetworkConnected() == true) {
 
-            URL tmdbMoviesRequestUrl = NetworkUtils.buildUrl(context.getString(R.string.tmdb_api_key));
+            //build the URI
+            URL tmdbMoviesRequestUrl = NetworkUtils.buildUrlMovieList(activityContext.getString(R.string.tmdb_api_key));
 
             try {
-                String jsonTMDBResponse = NetworkUtils
+
+                //download the JSON in this separated thread
+                String jsonTMDBMovieList = NetworkUtils
                         .getResponseFromHttpUrl(tmdbMoviesRequestUrl);
 
-                if(jsonTMDBResponse.isEmpty()==false){
-
-                    Log.i("denis getMoviesInfo", "jsonTMDBResponse length: " + jsonTMDBResponse.length());
-                    return returnMoviesArrayList(jsonTMDBResponse);
+                if(jsonTMDBMovieList.isEmpty()==false){
+                    //Parse the JSON to get the movie list
+                    Log.i("denis getMoviesInfo", "jsonTMDBMovieList length: " + jsonTMDBMovieList.length());
+                    return returnMoviesArrayList(jsonTMDBMovieList);
                 }
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
+            //return moviesArrayList;
         }
 
         return null;
@@ -59,27 +72,28 @@ public class MoviesInfoFromTMDB extends AsyncTask<Context, Void, ArrayList<Movie
     protected void onPostExecute(ArrayList<MovieDetails> movieDetailsArrayList) {
         super.onPostExecute(movieDetailsArrayList);
 
-        ProgressBar progressBar = (ProgressBar) ((Activity) context).findViewById(R.id.progressBar);
-        progressBar.setVisibility(View.INVISIBLE);
-
         if(movieDetailsArrayList == null){
-            Toast.makeText(context, context.getString(R.string.check_internet), Toast.LENGTH_LONG).show();
+            Toast.makeText(activityContext, activityContext.getString(R.string.check_internet), Toast.LENGTH_LONG).show();
         } else {
 
-            RecyclerView mRecycleView = (RecyclerView) ((Activity) context).findViewById(R.id.rv_movie_posters);
+            //make progress bar invisible again
+            ProgressBar progressBar = (ProgressBar) ((Activity) activityContext).findViewById(R.id.progressBar);
+            progressBar.setVisibility(View.INVISIBLE);
 
-            GridLayoutManager layoutManager = new GridLayoutManager(context, MainActivity.LAYOUT_NUM_COLUMS);
-
+            //get the RecyclerView resource and bind to a GridLayoutManager
+            RecyclerView mRecycleView = (RecyclerView) ((Activity) activityContext).findViewById(R.id.rv_movie_posters);
+            GridLayoutManager layoutManager = new GridLayoutManager(activityContext, MainActivity.LAYOUT_NUM_COLUMS);
             layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-
             mRecycleView.setLayoutManager(layoutManager);
-
-            mRecycleView.setAdapter(new MoviePosterAdapter(movieDetailsArrayList));
+            mRecycleView.setHasFixedSize(true);
+            mRecycleView.setAdapter(new MoviePosterAdapter(movieDetailsArrayList, activityContext));
         }
+
+
 
     }
 
-    public ArrayList<MovieDetails> returnMoviesArrayList(String jsonToParse){
+    private ArrayList<MovieDetails> returnMoviesArrayList(String jsonToParse){
         JSONObject jsonObject;
         JSONArray jsonArray;
         ArrayList<MovieDetails> movieDetailsList = new ArrayList<>();
@@ -98,20 +112,24 @@ public class MoviesInfoFromTMDB extends AsyncTask<Context, Void, ArrayList<Movie
             for(int index=0; index<jsonArray.length(); index++){
                 try {
                     jsonObject = jsonArray.getJSONObject(index);
+                    //TODO - aqui vou baixar os cdigos dos trailers e os comentarios
+                    String[] trailers_youtube = {""};
 
-                    movieDetailsList.add(new MovieDetails(jsonObject.getInt(context.getString(R.string.json_tmdb_vote_count)),
-                            jsonObject.getInt(context.getString(R.string.json_tmdb_id)),
-                            jsonObject.getDouble(context.getString(R.string.json_tmdb_voteavarage)),
-                            jsonObject.getString(context.getString(R.string.json_tmdb_title)),
-                            jsonObject.getString(context.getString(R.string.json_tmdb_posterpath)).replaceFirst("/",""),
-                            jsonObject.getString(context.getString(R.string.json_tmdb_overview)),
-                            jsonObject.getString(context.getString(R.string.json_tmdb_release_date))));
+                    movieDetailsList.add(new MovieDetails(jsonObject.getInt(activityContext.getString(R.string.json_tmdb_vote_count)),
+                            jsonObject.getInt(activityContext.getString(R.string.json_tmdb_id)),
+                            jsonObject.getDouble(activityContext.getString(R.string.json_tmdb_voteavarage)),
+                            jsonObject.getString(activityContext.getString(R.string.json_tmdb_title)),
+                            jsonObject.getString(activityContext.getString(R.string.json_tmdb_posterpath)).replaceFirst("/",""),
+                            jsonObject.getString(activityContext.getString(R.string.json_tmdb_overview)),
+                            jsonObject.getString(activityContext.getString(R.string.json_tmdb_release_date)), trailers_youtube));
 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
             }
+
+            //NetworkUtils.buildAndDownloadReviewsList(activityContext.getString(R.string.tmdb_api_key), 440021);
 
             return movieDetailsList;
 
@@ -121,8 +139,8 @@ public class MoviesInfoFromTMDB extends AsyncTask<Context, Void, ArrayList<Movie
 
     }
 
-    private static boolean isNetworkConnected() {
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+    private boolean isNetworkConnected() {
+        ConnectivityManager cm = (ConnectivityManager) activityContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }
