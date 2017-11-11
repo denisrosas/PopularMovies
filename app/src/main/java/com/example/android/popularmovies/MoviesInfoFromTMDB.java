@@ -2,8 +2,6 @@ package com.example.android.popularmovies;
 
 import android.app.Activity;
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -41,12 +39,14 @@ public class MoviesInfoFromTMDB extends AsyncTask<Context, Void, ArrayList<Movie
 
         activityContext = contexts[0];
 
-        if(isNetworkConnected() == true) {
+        if(NetworkUtils.isNetworkConnected(activityContext) == true) {
 
             //build the URI
             URL tmdbMoviesRequestUrl = NetworkUtils.buildUrlMovieList(activityContext.getString(R.string.tmdb_api_key));
 
             try {
+
+                NetworkUtils.buildAndDownloadTrailerList(activityContext.getString(R.string.tmdb_api_key), 274855);
 
                 //download the JSON in this separated thread
                 String jsonTMDBMovieList = NetworkUtils
@@ -113,7 +113,6 @@ public class MoviesInfoFromTMDB extends AsyncTask<Context, Void, ArrayList<Movie
                 try {
                     jsonObject = jsonArray.getJSONObject(index);
                     //TODO - aqui vou baixar os cdigos dos trailers e os comentarios
-                    String[] trailers_youtube = {""};
 
                     movieDetailsList.add(new MovieDetails(jsonObject.getInt(activityContext.getString(R.string.json_tmdb_vote_count)),
                             jsonObject.getInt(activityContext.getString(R.string.json_tmdb_id)),
@@ -121,7 +120,7 @@ public class MoviesInfoFromTMDB extends AsyncTask<Context, Void, ArrayList<Movie
                             jsonObject.getString(activityContext.getString(R.string.json_tmdb_title)),
                             jsonObject.getString(activityContext.getString(R.string.json_tmdb_posterpath)).replaceFirst("/",""),
                             jsonObject.getString(activityContext.getString(R.string.json_tmdb_overview)),
-                            jsonObject.getString(activityContext.getString(R.string.json_tmdb_release_date)), trailers_youtube));
+                            jsonObject.getString(activityContext.getString(R.string.json_tmdb_release_date))));
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -139,10 +138,6 @@ public class MoviesInfoFromTMDB extends AsyncTask<Context, Void, ArrayList<Movie
 
     }
 
-    private boolean isNetworkConnected() {
-        ConnectivityManager cm = (ConnectivityManager) activityContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
-    }
+
 }
 

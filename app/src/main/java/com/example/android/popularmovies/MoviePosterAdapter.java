@@ -74,10 +74,13 @@ public class MoviePosterAdapter extends RecyclerView.Adapter <MoviePosterAdapter
                 String [] extras_string = {movieDetails.getTitle(), movieDetails.getPosterPath(), movieDetails.getOverview(), movieDetails.getReleaseDate()};
                 Double voteAvarage = movieDetails.getVoteAvarage();
                 int voteCount = movieDetails.getVoteCount();
+                int movieId = movieDetails.getId();
 
+                i.putExtra("movieId", movieId);
                 i.putExtra("extras_string", extras_string);
                 i.putExtra("voteAvarage", voteAvarage);
                 i.putExtra("voteCount", voteCount);
+                i.putExtra("api_key", activityContext.getString(R.string.tmdb_api_key));
 
                 activityContext.startActivity(i);
 

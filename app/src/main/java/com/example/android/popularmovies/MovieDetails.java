@@ -9,12 +9,11 @@ class MovieDetails {
     private final String posterPath;
     private final String overview;
     private final String releaseDate;
-    private final String[] trailersList;
 
 
     MovieDetails(int voteCount, int id, Double voteAvarage,
                  String title, String posterPath,
-                 String overview, String releaseDate, String[] trailersList){
+                 String overview, String releaseDate){
 
         this.voteCount = voteCount;
         this.id = id;
@@ -23,7 +22,6 @@ class MovieDetails {
         this.posterPath = posterPath;
         this.overview = overview;
         this.releaseDate = releaseDate;
-        this.trailersList = trailersList;
     }
 
     int getVoteCount() {
@@ -53,10 +51,4 @@ class MovieDetails {
     String getReleaseDate() {
         return releaseDate;
     }
-
-    public String[] getTrailersList() {
-        return trailersList;
-    }
-
-
 }

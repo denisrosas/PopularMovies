@@ -27,7 +27,9 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
         String [] extras_string = i.getStringArrayExtra("extras_string");
         Double voteAvarage = i.getDoubleExtra("voteAvarage", 0.0);
+        int movieId = i.getIntExtra("movieId", 0);
         int voteCount = i.getIntExtra("voteCount", 0);
+        String api_key = i.getStringExtra("api_key");
 
 //        Log.i("MovieDetailsActivity", "denis - extra_string[0]: "+extras_string[0]
 //                        +"\nextra_string[1]: "+extras_string[1]
@@ -37,7 +39,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
 //                        +"\nvoteCount: "+voteCount);
 
         //TODO - Corrigir ultimo parametro. i.getExtra("movie_trailers");
-        MovieDetails movieDetails = new MovieDetails(voteCount, 0, voteAvarage, extras_string[0], extras_string[1], extras_string[2], extras_string[3], extras_string);
+        MovieDetails movieDetails = new MovieDetails(voteCount, movieId, voteAvarage, extras_string[0], extras_string[1], extras_string[2], extras_string[3]);
 
         Uri image_uri = returnImageUri(movieDetails.getPosterPath());
 
