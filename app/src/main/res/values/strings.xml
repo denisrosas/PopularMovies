@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Popular Movies</string>
-    <string name="tmdb_api_key">API KEY</string>
+    <string name="tmdb_api_key">YOUR TMDB API KEY HERE</string>
     <string name="sort_by_popularity">Sort By Popularity</string>
     <string name="sort_by_top_rated">Sort By Top Rated</string>
     <string name="back_menu">Back</string>
@@ -13,4 +13,8 @@
     <string name="json_tmdb_release_date">release_date</string>
     <string name="json_tmdb_vote_count">vote_count</string>
     <string name="release_date">Release Date:</string>
+    <string name="image_of_the_movie_poster">Image of the Movie Poster</string>
+    <string name="title_activity_delete_me">DeleteMeActivity</string>
+    <string name="accessibility_movie_trailer">Touch to open the movie trailer</string>
+    <string name="my_favorite_movies">My Favorite Movies</string>
 </resources>

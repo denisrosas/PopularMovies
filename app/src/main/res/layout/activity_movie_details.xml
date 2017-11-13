@@ -2,14 +2,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
-    android:paddingTop="16dp">
+    android:paddingTop="16dp"
+    android:scrollbars="vertical">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#FFFFFF" >
+        android:background="@color/white" >
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -20,7 +22,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="400dp"
                 android:layout_centerHorizontal="true"
-                android:contentDescription="Image of the Movie Poster"/>
+                android:contentDescription="@string/image_of_the_movie_poster" />
 
             <TextView
                 android:id="@+id/tv_movie_title"
@@ -29,7 +31,7 @@
                 android:layout_below="@id/iv_detail_poster"
                 android:layout_centerHorizontal="true"
                 android:textAlignment="center"
-                android:textColor="#000000"
+                android:textColor="@color/black"
                 android:textSize="30sp" />
 
             <TextView
@@ -38,7 +40,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/tv_movie_title"
                 android:paddingTop="10sp"
-                android:textColor="#000000"
+                android:textColor="@color/black"
                 android:textSize="20sp" />
 
             <TextView
@@ -47,7 +49,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/tv_rating"
                 android:paddingTop="10sp"
-                android:textColor="#000000"
+                android:textColor="@color/black"
                 android:textSize="20sp" />
 
             <TextView
@@ -56,10 +58,11 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/tv_release_date"
                 android:paddingTop="16sp"
-                android:textColor="#000000"
+                android:textColor="@color/black"
                 android:textSize="20sp" />
 
         </RelativeLayout>
+
     </ScrollView>
 
 </LinearLayout>

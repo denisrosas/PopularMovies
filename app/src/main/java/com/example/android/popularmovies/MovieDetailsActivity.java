@@ -38,6 +38,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
 //                        +"\nvoteAvarage: "+voteAvarage
 //                        +"\nvoteCount: "+voteCount);
 
+
         //TODO - Corrigir ultimo parametro. i.getExtra("movie_trailers");
         MovieDetails movieDetails = new MovieDetails(voteCount, movieId, voteAvarage, extras_string[0], extras_string[1], extras_string[2], extras_string[3]);
 

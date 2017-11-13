@@ -51,9 +51,9 @@ final class NetworkUtils {
 
         Uri.Builder UriBuilder = Uri.parse(TMDB_BASE_URL).buildUpon();
 
-        if(MainActivity.sortPopularity == true){
+        if(MainActivity.sortType == MainActivity.SORT_BY_POPULARITY){
             UriBuilder.appendPath(SORT_BY_POPULARITY);
-        } else {
+        } else if (MainActivity.sortType == MainActivity.SORT_BY_TOP_RATED){
             UriBuilder.appendPath(SORT_BY_TOP_RATED);
         }
 

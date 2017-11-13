@@ -1,15 +1,8 @@
 package com.example.android.popularmovies;
 
-import android.app.Activity;
 import android.content.Context;
-import android.os.AsyncTask;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
-import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,26 +11,20 @@ import org.json.JSONObject;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class MoviesInfoFromTMDB extends AsyncTask<Context, Void, ArrayList<MovieDetails>> {
+public class MoviesInfoFromTMDB extends AsyncTaskLoader<ArrayList<MovieDetails>> {
 
     private Context activityContext;
     public static final int REVIEW_AUTHOR_INDEX = 0;
     public static final int REVIEW_CONTENT_INDEX = 1;
 
-    MoviesInfoFromTMDB(Context context){
+
+    MoviesInfoFromTMDB(Context context ){
+        super(context);
         activityContext = context;
     }
 
     @Override
-    protected ArrayList<MovieDetails> doInBackground(Context... contexts) {
-
-        //ArrayList<MovieDetails> moviesArrayList = new ArrayList<MovieDetails>();
-
-        if(contexts.length==0) {
-            return null;
-        }
-
-        activityContext = contexts[0];
+    public ArrayList<MovieDetails> loadInBackground() {
 
         if(NetworkUtils.isNetworkConnected(activityContext) == true) {
 
@@ -45,9 +32,6 @@ public class MoviesInfoFromTMDB extends AsyncTask<Context, Void, ArrayList<Movie
             URL tmdbMoviesRequestUrl = NetworkUtils.buildUrlMovieList(activityContext.getString(R.string.tmdb_api_key));
 
             try {
-
-                NetworkUtils.buildAndDownloadTrailerList(activityContext.getString(R.string.tmdb_api_key), 274855);
-
                 //download the JSON in this separated thread
                 String jsonTMDBMovieList = NetworkUtils
                         .getResponseFromHttpUrl(tmdbMoviesRequestUrl);
@@ -62,35 +46,15 @@ public class MoviesInfoFromTMDB extends AsyncTask<Context, Void, ArrayList<Movie
                 e.printStackTrace();
             }
 
-            //return moviesArrayList;
         }
 
         return null;
     }
 
     @Override
-    protected void onPostExecute(ArrayList<MovieDetails> movieDetailsArrayList) {
-        super.onPostExecute(movieDetailsArrayList);
-
-        if(movieDetailsArrayList == null){
-            Toast.makeText(activityContext, activityContext.getString(R.string.check_internet), Toast.LENGTH_LONG).show();
-        } else {
-
-            //make progress bar invisible again
-            ProgressBar progressBar = (ProgressBar) ((Activity) activityContext).findViewById(R.id.progressBar);
-            progressBar.setVisibility(View.INVISIBLE);
-
-            //get the RecyclerView resource and bind to a GridLayoutManager
-            RecyclerView mRecycleView = (RecyclerView) ((Activity) activityContext).findViewById(R.id.rv_movie_posters);
-            GridLayoutManager layoutManager = new GridLayoutManager(activityContext, MainActivity.LAYOUT_NUM_COLUMS);
-            layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-            mRecycleView.setLayoutManager(layoutManager);
-            mRecycleView.setHasFixedSize(true);
-            mRecycleView.setAdapter(new MoviePosterAdapter(movieDetailsArrayList, activityContext));
-        }
-
-
-
+    protected void onStartLoading() {
+        super.onStartLoading();
+        forceLoad();
     }
 
     private ArrayList<MovieDetails> returnMoviesArrayList(String jsonToParse){
@@ -137,6 +101,7 @@ public class MoviesInfoFromTMDB extends AsyncTask<Context, Void, ArrayList<Movie
         }
 
     }
+
 
 
 }

@@ -69,7 +69,7 @@ public class MoviePosterAdapter extends RecyclerView.Adapter <MoviePosterAdapter
 
                 Intent i = new Intent(activityContext, MovieDetailsActivity.class);
 
-                //We're sending 3 vectors
+                //We're sending 3 vectors to the MovieDetails Activity
                 MovieDetails movieDetails = localMovieList.get(Integer.valueOf((String)view.getTag()));
                 String [] extras_string = {movieDetails.getTitle(), movieDetails.getPosterPath(), movieDetails.getOverview(), movieDetails.getReleaseDate()};
                 Double voteAvarage = movieDetails.getVoteAvarage();
