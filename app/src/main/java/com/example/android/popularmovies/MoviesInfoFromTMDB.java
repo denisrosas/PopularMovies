@@ -14,9 +14,6 @@ import java.util.ArrayList;
 public class MoviesInfoFromTMDB extends AsyncTaskLoader<ArrayList<MovieDetails>> {
 
     private Context activityContext;
-    public static final int REVIEW_AUTHOR_INDEX = 0;
-    public static final int REVIEW_CONTENT_INDEX = 1;
-
 
     MoviesInfoFromTMDB(Context context ){
         super(context);
@@ -26,17 +23,19 @@ public class MoviesInfoFromTMDB extends AsyncTaskLoader<ArrayList<MovieDetails>>
     @Override
     public ArrayList<MovieDetails> loadInBackground() {
 
-        if(NetworkUtils.isNetworkConnected(activityContext) == true) {
+        if(NetworkUtils.isNetworkConnected(activityContext)) {
 
             //build the URI
+            Log.i("denis loadInBackground", "  ");
             URL tmdbMoviesRequestUrl = NetworkUtils.buildUrlMovieList(activityContext.getString(R.string.tmdb_api_key));
+            String jsonTMDBMovieList = "";
 
             try {
                 //download the JSON in this separated thread
-                String jsonTMDBMovieList = NetworkUtils
+                jsonTMDBMovieList = NetworkUtils
                         .getResponseFromHttpUrl(tmdbMoviesRequestUrl);
 
-                if(jsonTMDBMovieList.isEmpty()==false){
+                if(jsonTMDBMovieList != null){
                     //Parse the JSON to get the movie list
                     Log.i("denis getMoviesInfo", "jsonTMDBMovieList length: " + jsonTMDBMovieList.length());
                     return returnMoviesArrayList(jsonTMDBMovieList);
@@ -66,7 +65,7 @@ public class MoviesInfoFromTMDB extends AsyncTaskLoader<ArrayList<MovieDetails>>
             jsonObject = new JSONObject(jsonToParse);
             jsonArray = jsonObject.getJSONArray("results");
 
-            //Log.i("denis Jsonarray", "posicao 0 do json: "+jsonArray.get(0));
+            Log.i("denis Jsonarray", "posicao 0 do json: "+jsonArray.get(0));
         } catch (JSONException e) {
             e.printStackTrace();
             return null;

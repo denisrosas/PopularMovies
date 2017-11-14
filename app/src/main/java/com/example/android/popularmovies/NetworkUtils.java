@@ -47,7 +47,7 @@ final class NetworkUtils {
 
     public static URL buildUrlMovieList(String api_key) {
 
-        URL url = null;
+        URL url;
 
         Uri.Builder UriBuilder = Uri.parse(TMDB_BASE_URL).buildUpon();
 
@@ -67,6 +67,7 @@ final class NetworkUtils {
             url = new URL(builtUri.toString());
         } catch (MalformedURLException e) {
             e.printStackTrace();
+            return null;
         }
 
         Log.i("denis buildUrlMovieList", "url: " + url.toString());
@@ -96,13 +97,13 @@ final class NetworkUtils {
         return url;
     }
 
-    public static ArrayList<String[]> buildAndDownloadReviewsList(String api_key, int movieID) {
+    public static ArrayList<String> buildAndDownloadReviewsList(String api_key, int movieID) {
 
         URL url = null;
-        JSONObject jsonObject, jsonObjectReviews = null;
+        JSONObject jsonObject;
         JSONArray jsonArray = null;
         int total_pages = 0;
-        ArrayList<String[]> reviewsList = new ArrayList<>();
+        ArrayList<String> reviewsList = new ArrayList<>();
 
         //request page 1 because at first we don't know the page count. We'll know after download the first JSON
         url = buildUrlReviewList(api_key, movieID, 1);
@@ -124,9 +125,7 @@ final class NetworkUtils {
                 Log.i("denis ", "No Reviews Found for this movie!!!!");
                 return null;
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
+        } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
 
@@ -135,7 +134,7 @@ final class NetworkUtils {
         for(int index=0; index<jsonArray.length(); index++){
             try{
                 reviewsList.add(parseJSONGetAuthorAndContent(jsonArray.getJSONObject(index)));
-                Log.i("denis Reviews", "reviewsList posicao "+index+" armazenou: "+reviewsList.get(index)[0] +" e "+reviewsList.get(index)[1]);
+                Log.i("denis Reviews", "reviewsList posicao "+index+" armazenou: "+reviewsList.get(index));
             } catch (Exception e){
                 e.printStackTrace();
             }
@@ -161,7 +160,7 @@ final class NetworkUtils {
                 for(int index=0; index<jsonArray.length(); index++){
                     try{
                         reviewsList.add(parseJSONGetAuthorAndContent(jsonArray.getJSONObject(index)));
-                        Log.i("denis Reviews", "reviewsList pagina: "+current_page+" posicao: "+(index+5)+" armazenou: "+reviewsList.get(index+5)[0] +" e "+reviewsList.get(index+5)[1]);
+                        Log.i("denis Reviews", "reviewsList pagina: "+current_page+" posicao: "+(index+5)+" armazenou: "+reviewsList.get(index+5));
                     } catch (Exception e){
                         e.printStackTrace();
                     }
@@ -172,12 +171,12 @@ final class NetworkUtils {
         return reviewsList;
     }
 
-    public static String[] parseJSONGetAuthorAndContent(JSONObject jsonObject){
-        String[] reviewInfo = {"",""};
-        //jsonObjectReviews = jsonArray.getJSONObject(index);
+    public static String parseJSONGetAuthorAndContent(JSONObject jsonObject){
+        String reviewInfo = "";
+
         try {
-            reviewInfo[MoviesInfoFromTMDB.REVIEW_AUTHOR_INDEX] = jsonObject.getString(JSON_REVIEW_AUTHOR);
-            reviewInfo[MoviesInfoFromTMDB.REVIEW_CONTENT_INDEX] = jsonObject.getString(JSON_REVIEW_CONTENT);
+            reviewInfo = jsonObject.getString(JSON_REVIEW_AUTHOR);
+            reviewInfo = reviewInfo.concat("@").concat(jsonObject.getString(JSON_REVIEW_CONTENT));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -225,10 +224,9 @@ final class NetworkUtils {
             //getting the Videos JSONArray from JSONObject
             jsonArray = jsonObject.getJSONArray(JSON_REVIEW_RESULTS);
 
-        } catch (IOException e) {
+        } catch (IOException | JSONException e) {
             e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
+            return trailerList;
         }
 
         Log.i("denis ", "jsonArray: "+jsonArray.toString());
@@ -236,7 +234,7 @@ final class NetworkUtils {
         for(int index=0; index<jsonArray.length(); index++){
             try{
                 trailerList.add(parseJSONGetTrailerList(jsonArray.getJSONObject(index)));
-                Log.i("denis Reviews", "trailerList posicao "+index+" armazenou: "+trailerList.get(index));
+                Log.i("denis Trailer", "trailerList posicao "+index+" armazenou: "+trailerList.get(index));
             } catch (Exception e){
                 e.printStackTrace();
             }
@@ -246,12 +244,11 @@ final class NetworkUtils {
     }
 
     private static String parseJSONGetTrailerList(JSONObject jsonObject) {
-        String reviewInfo = new String();
+        String reviewInfo = "";
         //jsonObjectReviews = jsonArray.getJSONObject(index);
         try {
 
             //if the video parsed is a Youtube Video
-//            String string1 = new String(jsonObject.getString(JSON_VIDEOS_SITE));
 //            Log.i("denis parse trailer","string1: "+ string1+" youtube: "+JSON_VIDEOS_YOUTUBE);
             if (jsonObject.getString(JSON_VIDEOS_SITE).equals(JSON_VIDEOS_YOUTUBE)){
 
@@ -266,25 +263,28 @@ final class NetworkUtils {
         return reviewInfo;
     }
 
+    //this method receives an URL and returns a String with the downloaded content
     public static String getResponseFromHttpUrl(URL url) throws IOException {
+        String jsonReturn = "";
         HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
+        Log.i("denis ", "getResponseFromHttpUrl: entrou");
 
         try {
-            InputStream in = urlConnection.getInputStream();
+            InputStream inputStream = urlConnection.getInputStream();
 
-            //InputStreamReader reader = new InputStreamReader(in);
-
-            Scanner scanner = new Scanner(in);
+            Scanner scanner = new Scanner(inputStream);
             scanner.useDelimiter("\\A");
-            //TODO - ver se esse demiliter eh necessario
-            String jsonReturn = "";
 
-            if(scanner.hasNext() == false)
+            if(!scanner.hasNext()){
+                Log.i("denis ", "(!scanner.hasNext()) entrou");
                 return null;
+            }
 
             while(scanner.hasNext()){
                 jsonReturn = jsonReturn.concat(scanner.next());
+                Log.i("denis ", "(scanner.hasNext())==true");
             }
+            //Log.i("denis ", "jsonReturn: "+jsonReturn);
             return jsonReturn;
 
         } catch (Exception e){
@@ -296,7 +296,7 @@ final class NetworkUtils {
         return null;
     }
 
-    public static boolean isNetworkConnected(Context activityContext) {
+    static boolean isNetworkConnected(Context activityContext) {
         ConnectivityManager cm = (ConnectivityManager) activityContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         return activeNetwork != null && activeNetwork.isConnectedOrConnecting();

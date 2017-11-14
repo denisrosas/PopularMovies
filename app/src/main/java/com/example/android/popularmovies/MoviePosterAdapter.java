@@ -69,21 +69,21 @@ public class MoviePosterAdapter extends RecyclerView.Adapter <MoviePosterAdapter
 
                 Intent i = new Intent(activityContext, MovieDetailsActivity.class);
 
-                //We're sending 3 vectors to the MovieDetails Activity
+                //We're sending 4 variables to MovieDetailsActivity
                 MovieDetails movieDetails = localMovieList.get(Integer.valueOf((String)view.getTag()));
                 String [] extras_string = {movieDetails.getTitle(), movieDetails.getPosterPath(), movieDetails.getOverview(), movieDetails.getReleaseDate()};
                 Double voteAvarage = movieDetails.getVoteAvarage();
                 int voteCount = movieDetails.getVoteCount();
                 int movieId = movieDetails.getId();
 
+                //setting the variables to pass to MovieDetailsActivity
                 i.putExtra("movieId", movieId);
                 i.putExtra("extras_string", extras_string);
                 i.putExtra("voteAvarage", voteAvarage);
                 i.putExtra("voteCount", voteCount);
-                i.putExtra("api_key", activityContext.getString(R.string.tmdb_api_key));
 
+                //call the intent
                 activityContext.startActivity(i);
-
             }
         });
     }
@@ -100,7 +100,7 @@ public class MoviePosterAdapter extends RecyclerView.Adapter <MoviePosterAdapter
                 .appendPath(imageFileName)
                 .build();
 
-        Log.i("MoviePosterAdapter", "complete Link: "+ builtUri.toString());
+        //Log.i("MoviePosterAdapter", "complete Link: "+ builtUri.toString());
 
         return builtUri;
     }

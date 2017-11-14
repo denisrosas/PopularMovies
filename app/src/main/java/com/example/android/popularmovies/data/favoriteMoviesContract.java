@@ -21,16 +21,22 @@ public class favoriteMoviesContract {
     /* FavoriteMoviesEntry is an inner class that defines the contents of the favoritemovies table */
     public static final class FavoriteMoviesEntry implements BaseColumns {
 
-        // TaskEntry content URI = base content URI + path
+        // FavoriteMoviesEntry content URI = base content URI + path
         public static final Uri CONTENT_URI =
                 BASE_CONTENT_URI.buildUpon().appendPath(FAVORITE_MOVIES_PATH).build();
 
         // Task table and column names
         public static final String TABLE_NAME = "favoritemovies";
 
-        // Since TaskEntry implements the interface "BaseColumns", it has an automatically produced
-        // "_ID" column in addition to the two below
+        // Since FavoriteMoviesEntry implements the interface "BaseColumns", it has an
+        // automatically produced "_ID" column
         public static final String COLUMN_MOVIE_ID = "movie_id";
+//        private final String title;
+//        private final String posterPath;
+//        private final String overview;
+//        private final String releaseDate;
+//        private final int voteCount;
+//        private final Double voteAvarage;
 
     }
 }

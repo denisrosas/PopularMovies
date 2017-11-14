@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public static final int SORT_BY_POPULARITY = 0;
     public static final int SORT_BY_TOP_RATED = 1;
     public static final int SORT_BY_FAVORITES = 2;
+    public static final String BUNDLE_SORTTYPE = "bundle_sortType";
     public static int LAYOUT_NUM_COLUMS;
 
     private static final int LOADER_MOVIES_FROM_TMDB = 31;
@@ -136,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         //Extraimos os dados do Bundle
         if(id==LOADER_MOVIES_FROM_TMDB) {
-            String queryType = args.getString("QueryType");
+//            String queryType = args.getString("QueryType");
             return new MoviesInfoFromTMDB(this);
         } else if (id==LOADER_MOVIES_FROM_DATABASE){
             Log.i("denis", "LOADER_MOVIES_FROM_DATABASE");
@@ -167,17 +168,20 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onLoaderReset(Loader<ArrayList<MovieDetails>> loader) {
-
+        //do nothing
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        outState.putInt(BUNDLE_SORTTYPE, sortType);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
+        sortType = savedInstanceState.getInt(BUNDLE_SORTTYPE);
     }
+
 }
 
