@@ -5,16 +5,15 @@
     <string name="sort_by_top_rated">Sort By Top Rated</string>
     <string name="back_menu">Back</string>
     <string name="check_internet">Please check your Internet Connection</string>
-    <string name="json_tmdb_id">id</string>
-    <string name="json_tmdb_voteavarage">vote_average</string>
-    <string name="json_tmdb_title">title</string>
-    <string name="json_tmdb_posterpath">poster_path</string>
-    <string name="json_tmdb_overview">overview</string>
-    <string name="json_tmdb_release_date">release_date</string>
-    <string name="json_tmdb_vote_count">vote_count</string>
+    <string name="json_tmdb_id" translatable="false">id</string>
+    <string name="json_tmdb_voteavarage" translatable="false">vote_average</string>
+    <string name="json_tmdb_title" translatable="false">title</string>
+    <string name="json_tmdb_posterpath" translatable="false">poster_path</string>
+    <string name="json_tmdb_overview" translatable="false">overview</string>
+    <string name="json_tmdb_release_date" translatable="false">release_date</string>
+    <string name="json_tmdb_vote_count" translatable="false">vote_count</string>
     <string name="release_date">Release Date:</string>
     <string name="image_of_the_movie_poster">Image of the Movie Poster</string>
-    <string name="title_activity_delete_me">DeleteMeActivity</string>
     <string name="accessibility_movie_trailer">Touch to open the movie trailer</string>
     <string name="my_favorite_movies">My Favorite Movies</string>
     <string name="add_movie_to_favorites">Add Movie to Favorites</string>

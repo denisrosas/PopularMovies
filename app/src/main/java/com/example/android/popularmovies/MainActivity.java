@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public static int LAYOUT_NUM_COLUMS;
 
     private static final int LOADER_MOVIES_FROM_TMDB = 31;
-    private static final int LOADER_MOVIES_FROM_DATABASE = 27;
+    private static final int LOADER_FAV_MOVIES_FROM_DATABASE = 27;
 
 
     @Override
@@ -70,7 +70,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         Log.i("denis Mainactivity", "onOptionsItemSelected - : item_id: "+item.getItemId());
 
-        if((item.getItemId() == R.id.sort_by_popularity)||(item.getItemId()==R.id.sort_by_top_rated)){
+        if((item.getItemId() == R.id.sort_by_popularity)||
+                (item.getItemId()==R.id.sort_by_top_rated)||
+                (item.getItemId()==R.id.my_favorite_movies)) {
 
             if(((item.getItemId() == R.id.sort_by_popularity)&&(sortType == SORT_BY_POPULARITY))
                     ||((item.getItemId() == R.id.sort_by_top_rated)&&(sortType == SORT_BY_TOP_RATED))
@@ -80,31 +82,36 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 return super.onOptionsItemSelected(item);
             }
 
+            //clear all vies in recyclerview
             RecyclerView mRecycleView = (RecyclerView) findViewById(R.id.rv_movie_posters);
             mRecycleView.removeAllViews();
 
-            if(item.getItemId() == R.id.sort_by_popularity){
-                sortType = SORT_BY_POPULARITY;
-            }else if (item.getItemId() == R.id.sort_by_top_rated){
-                sortType = SORT_BY_TOP_RATED;
-            }else if (item.getItemId() == R.id.my_favorite_movies){
-                sortType = SORT_BY_FAVORITES;
-            }
+            //set sortType global variable
+            if(item.getItemId() == R.id.sort_by_popularity)  {sortType = SORT_BY_POPULARITY;}
+            else if (item.getItemId() == R.id.sort_by_top_rated) {sortType = SORT_BY_TOP_RATED;}
+            else if (item.getItemId() == R.id.my_favorite_movies) {sortType = SORT_BY_FAVORITES;}
 
-            if((sortType == SORT_BY_POPULARITY)||(sortType==SORT_BY_TOP_RATED)) {
-                //start Loader Task to download the movie details
+            //start Loader Task to do load the movie details
+            LoaderManager loaderManager = getSupportLoaderManager();
 
-                LoaderManager loaderManager = getSupportLoaderManager();
+            if(sortType==SORT_BY_FAVORITES){
+                Loader<ArrayList<MovieDetails>> loaderTask = loaderManager.getLoader(LOADER_FAV_MOVIES_FROM_DATABASE);
+
+                if (loaderTask == null) {
+                    loaderManager.initLoader(LOADER_FAV_MOVIES_FROM_DATABASE, null, this);
+                } else {
+                    loaderManager.restartLoader(LOADER_FAV_MOVIES_FROM_DATABASE, null, this);
+                }
+            } else {
                 Loader<ArrayList<MovieDetails>> loaderTask = loaderManager.getLoader(LOADER_MOVIES_FROM_TMDB);
 
-                if(loaderTask == null) {
+                if (loaderTask == null) {
                     loaderManager.initLoader(LOADER_MOVIES_FROM_TMDB, null, this);
                 } else {
                     loaderManager.restartLoader(LOADER_MOVIES_FROM_TMDB, null, this);
                 }
-
-                (findViewById(R.id.progressBar)).setVisibility(View.VISIBLE);
             }
+            (findViewById(R.id.progressBar)).setVisibility(View.VISIBLE);
         }
 
         return super.onOptionsItemSelected(item);
@@ -132,11 +139,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public Loader<ArrayList<MovieDetails>> onCreateLoader(int id, final Bundle args) {
 
         //Extraimos os dados do Bundle
-        if(id==LOADER_MOVIES_FROM_TMDB) {
+        if ((id==LOADER_MOVIES_FROM_TMDB)||(id==LOADER_FAV_MOVIES_FROM_DATABASE)) {
 //            String queryType = args.getString("QueryType");
             return new MoviesInfoFromTMDB(this);
-        } else if (id==LOADER_MOVIES_FROM_DATABASE){
-            Log.i("denis", "LOADER_MOVIES_FROM_DATABASE");
         }
         return null;
     }

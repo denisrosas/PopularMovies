@@ -62,8 +62,8 @@ public class favoriteMoviesCP extends ContentProvider{
                 String[] columns = {COLUMN_MOVIE_ID};
                 //this content provider returns all movies in favoritemovies table
                 cursor = database.query(favoriteMoviesContract.FavoriteMoviesEntry.TABLE_NAME,
-                        columns, //get only movie_id column
-                        null,
+                        null, //get all columns
+                        null, //get all rows from table
                         null,
                         null,
                         null,
