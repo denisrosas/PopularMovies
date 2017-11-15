@@ -1,8 +1,11 @@
 package com.example.android.popularmovies;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
@@ -10,10 +13,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.popularmovies.data.favoriteMoviesContract;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -25,12 +31,10 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
 
     private static final int LOADER_TRAILERS_FROM_TMDB = 49;
     private static final int LOADER_REVIEWS_FROM_TMDB = 55;
+    private static boolean movieIsFavorite;
+    Button favoriteButton;
 
-    //Extra Variables:
-    String [] extras_string;
-    Double voteAvarage;
-    int movieId;
-    int voteCount;
+    //Extra Variable:
     MovieDetails movieDetails;
 
     @Override
@@ -38,34 +42,18 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_details);
 
-        Intent i = getIntent();
+        movieDetails = getExtraVariablesFromIntent();
+        favoriteButton = (Button) findViewById(R.id.add_to_favorite);
 
-        extras_string = i.getStringArrayExtra("extras_string");
-        voteAvarage = i.getDoubleExtra("voteAvarage", 0.0);
-        movieId = i.getIntExtra("movieId", 0);
-        voteCount = i.getIntExtra("voteCount", 0);
+        startLoaderTask(LOADER_TRAILERS_FROM_TMDB);
+        startLoaderTask(LOADER_REVIEWS_FROM_TMDB);
 
-        movieDetails = new MovieDetails(voteCount, movieId, voteAvarage, extras_string[0], extras_string[1], extras_string[2], extras_string[3]);
+        movieIsFavorite = isMovieInFavoriteList(movieDetails.getId());
 
-        Bundle bundle = new Bundle();
-
-        LoaderManager loaderManagerTrailers = getSupportLoaderManager();
-        Loader<ArrayList<String>> loaderTask = loaderManagerTrailers.getLoader(LOADER_TRAILERS_FROM_TMDB);
-
-        if(loaderTask == null) {
-            loaderManagerTrailers.initLoader(LOADER_TRAILERS_FROM_TMDB, bundle, this);
-        } else {
-            loaderManagerTrailers.restartLoader(LOADER_TRAILERS_FROM_TMDB, bundle, this);
-        }
-
-        LoaderManager loaderManagerReviews = getSupportLoaderManager();
-        Loader<ArrayList<String>> loaderTaskReviews = loaderManagerReviews.getLoader(LOADER_REVIEWS_FROM_TMDB);
-
-        if(loaderTaskReviews == null) {
-            loaderManagerReviews.initLoader(LOADER_REVIEWS_FROM_TMDB, bundle, this);
-        } else {
-            loaderManagerReviews.restartLoader(LOADER_REVIEWS_FROM_TMDB, bundle, this);
-        }
+        if(movieIsFavorite)
+            favoriteButton.setText(getString(R.string.remove_movie_from_favorites));
+        else
+            favoriteButton.setText(getString(R.string.add_movie_to_favorites));
 
         //TODO - check fi this movie is already a favorite. if is, set the heart icon to red
 
@@ -120,16 +108,113 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
         ((TextView) findViewById(R.id.tv_synopsis)).setText(movieDetails.getOverview());
     }
 
+    private void startLoaderTask(int loaderId){
+
+        Bundle bundle = new Bundle();
+
+        LoaderManager loaderManager = getSupportLoaderManager();
+        Loader<ArrayList<String>> loaderTaskTrailers = loaderManager.getLoader(loaderId);
+
+        if(loaderTaskTrailers == null) {
+            loaderManager.initLoader(loaderId, bundle, this);
+        } else {
+            loaderManager.restartLoader(loaderId, bundle, this);
+        }
+    }
+
+    private MovieDetails getExtraVariablesFromIntent() {
+
+        String [] extras_string;
+        Double voteAvarage;
+        int movieId;
+        int voteCount;
+        Intent i = getIntent();
+
+        extras_string = i.getStringArrayExtra("extras_string");
+        voteAvarage = i.getDoubleExtra("voteAvarage", 0.0);
+        movieId = i.getIntExtra("movieId", 0);
+        voteCount = i.getIntExtra("voteCount", 0);
+
+        return new MovieDetails(voteCount, movieId, voteAvarage, extras_string[0], extras_string[1], extras_string[2], extras_string[3]);
+
+    }
+
+    public void addDeleteMovieFavorites(View view){
+
+       if(view.getId()==R.id.add_to_favorite){
+
+           Button favoriteButton = (Button) findViewById(R.id.add_to_favorite);
+
+           if(!movieIsFavorite) {
+
+               //insert movie in favorites database
+               Uri uri = favoriteMoviesContract.FavoriteMoviesEntry.CONTENT_URI;
+               uri = uri.buildUpon().build();
+
+               ContentValues contentValues = new ContentValues();
+               contentValues.put(favoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_ID, movieDetails.getId());
+               contentValues.put(favoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_TITLE, movieDetails.getTitle());
+               contentValues.put(favoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_OVERVIEW, movieDetails.getOverview());
+               contentValues.put(favoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_POSTER_PATH, movieDetails.getPosterPath());
+               contentValues.put(favoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_RELEASE_DATE, movieDetails.getReleaseDate());
+               contentValues.put(favoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_VOTE_AVERAGE, movieDetails.getVoteAvarage());
+               contentValues.put(favoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_VOTE_COUNT, movieDetails.getVoteCount());
+
+               Uri resultUri = null;
+               resultUri = getContentResolver().insert(uri, contentValues);
+               if(resultUri!=null) {
+                   favoriteButton.setText(getString(R.string.remove_movie_from_favorites));
+                   movieIsFavorite = true;
+               }
+               Log.i("denis", "MovieDetailsActivity - uri: " + resultUri.toString());
+
+           } else{
+
+               Uri uri = favoriteMoviesContract.FavoriteMoviesEntry.CONTENT_URI;
+               uri = uri.buildUpon().appendPath(Integer.toString(movieDetails.getId())).build();
+
+               int deleteCount = getContentResolver().delete(uri, null, null);
+               if(deleteCount==1){
+                   favoriteButton.setText(getString(R.string.add_movie_to_favorites));
+                   movieIsFavorite=false;
+                   Log.i("denis", "MovieDetailsActivity - addDeleteMovieFavorites - movie Successfully Removed from Favorites");
+               } else {
+                   Log.i("denis", "MovieDetailsActivity - addDeleteMovieFavorites - Error to remove. deleteCount: "+deleteCount);
+                   Toast.makeText(this, "Error to remove movie from Favorites", Toast.LENGTH_LONG).show();
+               }
+
+           }
+       }
+
+    }
+
+    private boolean isMovieInFavoriteList(int movieId) {
+
+        Uri uri = favoriteMoviesContract.FavoriteMoviesEntry.CONTENT_URI;
+        uri = uri.buildUpon().appendPath(Integer.toString(movieId)).build();
+
+        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+
+        if (cursor.getCount()==1){
+            cursor.close();
+            return true;
+        } else if (cursor.getCount()==0){
+            cursor.close();
+            return false;
+        }
+        return false;
+    }
+
+
     @Override
     public Loader<ArrayList<String>> onCreateLoader(int id, Bundle args) {
-
 
         //Extraimos os dados do Bundle
         if(id==LOADER_TRAILERS_FROM_TMDB) {
 //            String queryType = args.getString("QueryType");
-            return new TrailerListFromTMDB(this, movieId, getString(R.string.tmdb_api_key));
+            return new TrailerListFromTMDB(this, movieDetails.getId(), getString(R.string.tmdb_api_key));
         } else if (id==LOADER_REVIEWS_FROM_TMDB){
-            return new ReviewListFromTMDB(this, movieId, getString(R.string.tmdb_api_key));
+            return new ReviewListFromTMDB(this, movieDetails.getId(), getString(R.string.tmdb_api_key));
         }
 
         return null;
@@ -169,5 +254,15 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
     @Override
     public void onLoaderReset(Loader<ArrayList<String>> loader) {
 
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
     }
 }

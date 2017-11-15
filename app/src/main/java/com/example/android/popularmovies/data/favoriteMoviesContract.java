@@ -3,9 +3,6 @@ package com.example.android.popularmovies.data;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
-/**
- * Created by Denis on 08/11/2017.
- */
 
 public class favoriteMoviesContract {
     // The authority, which is how your code knows which Content Provider to access
@@ -31,12 +28,12 @@ public class favoriteMoviesContract {
         // Since FavoriteMoviesEntry implements the interface "BaseColumns", it has an
         // automatically produced "_ID" column
         public static final String COLUMN_MOVIE_ID = "movie_id";
-//        private final String title;
-//        private final String posterPath;
-//        private final String overview;
-//        private final String releaseDate;
-//        private final int voteCount;
-//        private final Double voteAvarage;
+        public static final String COLUMN_MOVIE_TITLE = "movie_title";
+        public static final String COLUMN_MOVIE_POSTER_PATH = "movie_poster_path";
+        public static final String COLUMN_MOVIE_OVERVIEW = "movie_overview";
+        public static final String COLUMN_MOVIE_RELEASE_DATE = "movie_release_date";
+        public static final String COLUMN_MOVIE_VOTE_COUNT = "movie_vote_count";
+        public static final String COLUMN_MOVIE_VOTE_AVERAGE = "movie_vote_average";
 
     }
 }

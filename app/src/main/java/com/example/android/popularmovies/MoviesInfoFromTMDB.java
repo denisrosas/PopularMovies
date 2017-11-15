@@ -60,6 +60,9 @@ public class MoviesInfoFromTMDB extends AsyncTaskLoader<ArrayList<MovieDetails>>
         JSONObject jsonObject;
         JSONArray jsonArray;
         ArrayList<MovieDetails> movieDetailsList = new ArrayList<>();
+        int maxTitleSize=0, maxOverviewSize=0;
+        String maxTitle = "", maxOverviewName="";
+
 
         try {
             jsonObject = new JSONObject(jsonToParse);
@@ -85,11 +88,28 @@ public class MoviesInfoFromTMDB extends AsyncTaskLoader<ArrayList<MovieDetails>>
                             jsonObject.getString(activityContext.getString(R.string.json_tmdb_overview)),
                             jsonObject.getString(activityContext.getString(R.string.json_tmdb_release_date))));
 
+                    if(movieDetailsList.get(index).getTitle().length() > maxTitleSize){
+                        maxTitleSize = movieDetailsList.get(index).getTitle().length();
+                        maxTitle = movieDetailsList.get(index).getTitle();
+                    }
+
+                    if(movieDetailsList.get(index).getOverview().length() > maxOverviewSize){
+                        maxOverviewSize = movieDetailsList.get(index).getOverview().length();
+                        maxOverviewName = movieDetailsList.get(index).getOverview();
+                    }
+
+                    if(index<5){
+                        Log.i("denis", "Poster Path"+ movieDetailsList.get(index).getPosterPath());
+                    }
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
             }
+
+            Log.i("denis","maxTitleSize: "+maxTitleSize+" maxTitle: "+maxTitle);
+            Log.i("denis","maxOverviewSize: "+maxOverviewSize+" maxOverviewName: "+ maxOverviewName);
 
             //NetworkUtils.buildAndDownloadReviewsList(activityContext.getString(R.string.tmdb_api_key), 440021);
 

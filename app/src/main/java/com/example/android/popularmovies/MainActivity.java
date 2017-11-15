@@ -92,19 +92,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             }
 
             if((sortType == SORT_BY_POPULARITY)||(sortType==SORT_BY_TOP_RATED)) {
-                //start AsynTask to download the movie details
-//                MoviesInfoFromTMDB downloadTask = new MoviesInfoFromTMDB(this);
-//                downloadTask.execute(this);
-
-                Bundle bundle = new Bundle();
+                //start Loader Task to download the movie details
 
                 LoaderManager loaderManager = getSupportLoaderManager();
                 Loader<ArrayList<MovieDetails>> loaderTask = loaderManager.getLoader(LOADER_MOVIES_FROM_TMDB);
 
                 if(loaderTask == null) {
-                    loaderManager.initLoader(LOADER_MOVIES_FROM_TMDB, bundle, this);
+                    loaderManager.initLoader(LOADER_MOVIES_FROM_TMDB, null, this);
                 } else {
-                    loaderManager.restartLoader(LOADER_MOVIES_FROM_TMDB, bundle, this);
+                    loaderManager.restartLoader(LOADER_MOVIES_FROM_TMDB, null, this);
                 }
 
                 (findViewById(R.id.progressBar)).setVisibility(View.VISIBLE);
