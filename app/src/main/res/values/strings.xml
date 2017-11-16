@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Popular Movies</string>
-    <string name="tmdb_api_key">YOUR API KEY HERE</string>
+    <string name="tmdb_api_key">YOUR_API_KEY_HERE</string>
     <string name="sort_by_popularity">Sort By Popularity</string>
     <string name="sort_by_top_rated">Sort By Top Rated</string>
     <string name="back_menu">Back</string>
@@ -18,4 +18,5 @@
     <string name="my_favorite_movies">My Favorite Movies</string>
     <string name="add_movie_to_favorites">Add Movie to Favorites</string>
     <string name="remove_movie_from_favorites">Remove Movie from Favorites</string>
+    <string name="trailer">Trailer</string>
 </resources>

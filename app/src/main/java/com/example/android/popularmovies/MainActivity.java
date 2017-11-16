@@ -40,19 +40,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         //this app was designed to portrait mode only
         setNumColumsBasedOnDisplaySize();
 
-//        MoviesInfoFromTMDB downloadTask = new MoviesInfoFromTMDB(this);
-//        downloadTask.execute(this);
-
-        Bundle bundle = new Bundle();
-
-        LoaderManager loaderManager = getSupportLoaderManager();
-        Loader<ArrayList<MovieDetails>> loaderTask = loaderManager.getLoader(LOADER_MOVIES_FROM_TMDB);
-
-        if(loaderTask == null) {
-            loaderManager.initLoader(LOADER_MOVIES_FROM_TMDB, bundle, this);
-        } else {
-            loaderManager.restartLoader(LOADER_MOVIES_FROM_TMDB, bundle, this);
-        }
+        //loader Task will download the Movie list from TMDB page
+        startLoaderTask(LOADER_MOVIES_FROM_TMDB);
     }
 
     @Override
@@ -95,26 +84,26 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             LoaderManager loaderManager = getSupportLoaderManager();
 
             if(sortType==SORT_BY_FAVORITES){
-                Loader<ArrayList<MovieDetails>> loaderTask = loaderManager.getLoader(LOADER_FAV_MOVIES_FROM_DATABASE);
-
-                if (loaderTask == null) {
-                    loaderManager.initLoader(LOADER_FAV_MOVIES_FROM_DATABASE, null, this);
-                } else {
-                    loaderManager.restartLoader(LOADER_FAV_MOVIES_FROM_DATABASE, null, this);
-                }
+                startLoaderTask(LOADER_FAV_MOVIES_FROM_DATABASE);
             } else {
-                Loader<ArrayList<MovieDetails>> loaderTask = loaderManager.getLoader(LOADER_MOVIES_FROM_TMDB);
-
-                if (loaderTask == null) {
-                    loaderManager.initLoader(LOADER_MOVIES_FROM_TMDB, null, this);
-                } else {
-                    loaderManager.restartLoader(LOADER_MOVIES_FROM_TMDB, null, this);
-                }
+                startLoaderTask(LOADER_MOVIES_FROM_TMDB);
             }
             (findViewById(R.id.progressBar)).setVisibility(View.VISIBLE);
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void startLoaderTask(int loaderId){
+
+        LoaderManager loaderManager = getSupportLoaderManager();
+        Loader<ArrayList<MovieDetails>> loaderTaskTrailers = loaderManager.getLoader(loaderId);
+
+        if(loaderTaskTrailers == null) {
+            loaderManager.initLoader(loaderId, null, this);
+        } else {
+            loaderManager.restartLoader(loaderId, null, this);
+        }
     }
 
     private void setNumColumsBasedOnDisplaySize(){

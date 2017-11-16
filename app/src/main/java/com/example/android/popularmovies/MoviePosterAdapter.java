@@ -57,9 +57,9 @@ public class MoviePosterAdapter extends RecyclerView.Adapter <MoviePosterAdapter
             //if it's not image file, get fail image from Resources
             Picasso.with(activityContext).load(R.drawable.erro_loading_image).into(iv_holder.imageView);
             Log.i("denis", "Fail to load the image.");
-
         }
 
+        //create onClickListener to open MovieDetailsActivity
         iv_holder.imageView.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -95,14 +95,12 @@ public class MoviePosterAdapter extends RecyclerView.Adapter <MoviePosterAdapter
 
     private Uri returnImageUri(String imageFileName){
 
-        Uri builtUri = Uri.parse(TMDB_BASE_URL).buildUpon()
+        return Uri.parse(TMDB_BASE_URL).buildUpon()
                 .appendPath(TMDB_LIST_IMAGE_SIZE)
                 .appendPath(imageFileName)
                 .build();
 
         //Log.i("MoviePosterAdapter", "complete Link: "+ builtUri.toString());
-
-        return builtUri;
     }
 
     class ImageViewHolder extends RecyclerView.ViewHolder{

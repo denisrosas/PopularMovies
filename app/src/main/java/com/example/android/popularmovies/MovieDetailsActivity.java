@@ -9,6 +9,8 @@ import android.os.PersistableBundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,6 +44,9 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_details);
+
+        ProgressBar progressBar = (ProgressBar) findViewById(R.id.pbLoadMovieDetails);
+        progressBar.setVisibility(View.VISIBLE);
 
         movieDetails = getExtraVariablesFromIntent();
         favoriteButton = (Button) findViewById(R.id.add_to_favorite);
@@ -205,7 +211,6 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
         return false;
     }
 
-
     @Override
     public Loader<ArrayList<String>> onCreateLoader(int id, Bundle args) {
 
@@ -221,34 +226,38 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
     }
 
     @Override
-    public void onLoadFinished(Loader<ArrayList<String>> loader, ArrayList<String> arrayList) {
+    public void onLoadFinished(Loader<ArrayList<String>> loader, ArrayList<String> loaderResult) {
 
-        if (arrayList == null) {
+        if (loaderResult == null) {
             Toast.makeText(this, getString(R.string.check_internet), Toast.LENGTH_LONG).show();
             return;
-        } else
+        } else {
+            //set textViews before trailers and reviews
             setTextViewsAndImages(movieDetails);
+        }
 
         if(loader.getId()==LOADER_TRAILERS_FROM_TMDB) {
 
-            Log.i("denis", "LOADER_TRAILERS_FROM_TMDB");
-
-            for (String text : arrayList) {
-                Log.i("denis", "trailer numero: " + text);
-            }
+            //get the RecyclerView resource and bind to a GridLayoutManager
+            RecyclerView mRecycleView = (RecyclerView) findViewById(R.id.rv_trailer_list);
+            LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+            mRecycleView.setLayoutManager(layoutManager);
+            mRecycleView.setHasFixedSize(true);
+            mRecycleView.setAdapter(new MovieTrailersAdapter(loaderResult, this));
 
         } else if (loader.getId() == LOADER_REVIEWS_FROM_TMDB){
 
+            ProgressBar progressBar = (ProgressBar) findViewById(R.id.pbLoadMovieDetails);
+            progressBar.setVisibility(View.INVISIBLE);
+
             Log.i("denis", "LOADER_REVIEWS_FROM_TMDB");
 
-            for(String text : arrayList){
+            for(String text : loaderResult){
                 String[] temp1 = text.split("@",2);
                 Log.i("denis", "onLoadFinished() - review author: " + temp1[0]);
                 Log.i("denis", "onLoadFinished() - review text: " + temp1[1]);
             }
-
         }
-
     }
 
     @Override
