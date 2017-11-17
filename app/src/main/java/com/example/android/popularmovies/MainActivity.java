@@ -21,10 +21,12 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<ArrayList<MovieDetails>> {
 
-    public static int sortType = 0;
     public static final int SORT_BY_POPULARITY = 0;
     public static final int SORT_BY_TOP_RATED = 1;
     public static final int SORT_BY_FAVORITES = 2;
+
+    public static int sortType = SORT_BY_POPULARITY;
+
     public static final String BUNDLE_SORTTYPE = "bundle_sortType";
     public static int LAYOUT_NUM_COLUMS;
 
@@ -36,6 +38,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        clearRecyclerView();
 
         //this app was designed to portrait mode only
         setNumColumsBasedOnDisplaySize();
@@ -71,9 +75,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 return super.onOptionsItemSelected(item);
             }
 
-            //clear all vies in recyclerview
-            RecyclerView mRecycleView = (RecyclerView) findViewById(R.id.rv_movie_posters);
-            mRecycleView.removeAllViews();
+            clearRecyclerView();
 
             //set sortType global variable
             if(item.getItemId() == R.id.sort_by_popularity)  {sortType = SORT_BY_POPULARITY;}
@@ -124,6 +126,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         }
     }
 
+    private void clearRecyclerView() {
+        //clear all vies in recyclerview
+        RecyclerView mRecycleView = (RecyclerView) findViewById(R.id.rv_movie_posters);
+        mRecycleView.removeAllViews();
+    }
+
     @Override
     public Loader<ArrayList<MovieDetails>> onCreateLoader(int id, final Bundle args) {
 
@@ -138,22 +146,28 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public void onLoadFinished(Loader<ArrayList<MovieDetails>> loader, ArrayList<MovieDetails> movieDetailsArrayList) {
 
-        if(movieDetailsArrayList == null){
-            Toast.makeText(this,getString(R.string.check_internet), Toast.LENGTH_LONG).show();
-        } else {
+        //make progress bar invisible again
+        ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.INVISIBLE);
 
-            //make progress bar invisible again
-            ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
-            progressBar.setVisibility(View.INVISIBLE);
-
-            //get the RecyclerView resource and bind to a GridLayoutManager
-            RecyclerView mRecycleView = (RecyclerView) findViewById(R.id.rv_movie_posters);
-            GridLayoutManager layoutManager = new GridLayoutManager(this, MainActivity.LAYOUT_NUM_COLUMS);
-            layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-            mRecycleView.setLayoutManager(layoutManager);
-            mRecycleView.setHasFixedSize(true);
-            mRecycleView.setAdapter(new MoviePosterAdapter(movieDetailsArrayList, this));
+        if(movieDetailsArrayList==null){
+            movieDetailsArrayList = new ArrayList<>();
         }
+
+        if((movieDetailsArrayList.size() == 0)&&(loader.getId()==LOADER_FAV_MOVIES_FROM_DATABASE)){
+
+            Toast.makeText(this,getString(R.string.empty_favorite_movies_list), Toast.LENGTH_LONG).show();
+
+        }
+
+        //get the RecyclerView resource and bind to a GridLayoutManager
+        RecyclerView mRecycleView = (RecyclerView) findViewById(R.id.rv_movie_posters);
+        GridLayoutManager layoutManager = new GridLayoutManager(this, MainActivity.LAYOUT_NUM_COLUMS);
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        mRecycleView.setLayoutManager(layoutManager);
+        mRecycleView.setHasFixedSize(true);
+        mRecycleView.setAdapter(new MoviePosterAdapter(movieDetailsArrayList, this));
+
     }
 
     @Override

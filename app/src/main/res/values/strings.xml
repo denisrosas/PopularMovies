@@ -12,11 +12,17 @@
     <string name="json_tmdb_overview" translatable="false">overview</string>
     <string name="json_tmdb_release_date" translatable="false">release_date</string>
     <string name="json_tmdb_vote_count" translatable="false">vote_count</string>
-    <string name="release_date">Release Date:</string>
+    <string name="release_date">Release Date: </string>
     <string name="image_of_the_movie_poster">Image of the Movie Poster</string>
     <string name="accessibility_movie_trailer">Touch to open the movie trailer</string>
     <string name="my_favorite_movies">My Favorite Movies</string>
+    <string name="empty_favorite_movies_list">Your Favorite Movies List is Empty</string>
     <string name="add_movie_to_favorites">Add Movie to Favorites</string>
     <string name="remove_movie_from_favorites">Remove Movie from Favorites</string>
-    <string name="trailer">Trailer</string>
+    <string name="synopsis">Synopsis</string>
+    <string name="trailers_expanded">Trailers (-)</string>
+    <string name="trailers_shrinked">Trailers (+)</string>
+    <string name="reviews_expanded">Reviews (-)</string>
+    <string name="reviews_shrinked">Reviews (+)</string>
+    <string name="youtube_app_not_found">Youtube app not Installed</string>
 </resources>

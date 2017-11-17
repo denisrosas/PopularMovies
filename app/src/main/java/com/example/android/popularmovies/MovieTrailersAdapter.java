@@ -9,7 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -48,7 +48,7 @@ public class MovieTrailersAdapter extends RecyclerView.Adapter  <MovieTrailersAd
         holder.trailerImageView.setTag(trailerList.get(position));
 
         //set the text view above the trailer link
-        holder.trailerTextView.setText(activityContext.getString(R.string.trailer)+": "+(position+1));
+        //holder.trailerTextView.setText(activityContext.getString(R.string.trailer)+": "+(position+1));
 
         //set the image to the Thumbnail of Youtube Video
         Uri builtUri = returnThumbnailUri(trailerList.get(position));
@@ -58,8 +58,15 @@ public class MovieTrailersAdapter extends RecyclerView.Adapter  <MovieTrailersAd
             @Override
             public void onClick(View view) {
                 String youtubeVideoId = (String) view.getTag();
+
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube://" + youtubeVideoId));
-                activityContext.startActivity(intent);
+
+                //check if app can resolve the intent to launch Youtube app
+                if (intent.resolveActivity(activityContext.getPackageManager()) != null) {
+                    activityContext.startActivity(intent);
+                } else{
+                    Toast.makeText(activityContext, activityContext.getString(R.string.youtube_app_not_found), Toast.LENGTH_LONG).show();
+                }
             }
         });
     }
@@ -83,12 +90,12 @@ public class MovieTrailersAdapter extends RecyclerView.Adapter  <MovieTrailersAd
 
     class TrailerViewHolder extends RecyclerView.ViewHolder {
 
-        TextView trailerTextView;
+        //TextView trailerTextView;
         ImageView trailerImageView;
 
         TrailerViewHolder(View itemView) {
             super(itemView);
-            trailerTextView = (TextView) itemView.findViewById(R.id.tv_trailer_id);
+            //trailerTextView = (TextView) itemView.findViewById(R.id.tv_trailer_id);
             trailerImageView = (ImageView) itemView.findViewById(R.id.iv_trailer_thumbnail);
         }
     }

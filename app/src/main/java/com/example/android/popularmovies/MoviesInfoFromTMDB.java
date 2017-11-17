@@ -71,8 +71,14 @@ public class MoviesInfoFromTMDB extends AsyncTaskLoader<ArrayList<MovieDetails>>
 
         //download the favorite movies from the ContentPrivider
         Cursor cursor = activityContext.getContentResolver().query(uri, null, null, null, null);
-        cursor.moveToFirst();
+
         Log.i("denis", cursor.getCount()+" favorite movies found in database");
+
+        if(cursor.getCount()==0) {
+            return favoriteMovies;
+        }
+
+        cursor.moveToFirst();
 
         do {
             MovieDetails movieDetails = new MovieDetails(
@@ -120,7 +126,6 @@ public class MoviesInfoFromTMDB extends AsyncTaskLoader<ArrayList<MovieDetails>>
             for(int index=0; index<jsonArray.length(); index++){
                 try {
                     jsonObject = jsonArray.getJSONObject(index);
-                    //TODO - aqui vou baixar os cdigos dos trailers e os comentarios
 
                     movieDetailsList.add(new MovieDetails(jsonObject.getInt(activityContext.getString(R.string.json_tmdb_vote_count)),
                             jsonObject.getInt(activityContext.getString(R.string.json_tmdb_id)),

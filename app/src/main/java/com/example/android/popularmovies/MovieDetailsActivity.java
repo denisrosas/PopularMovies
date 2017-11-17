@@ -9,6 +9,7 @@ import android.os.PersistableBundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -36,6 +37,8 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
     private static final int LOADER_REVIEWS_FROM_TMDB = 55;
     private static boolean movieIsFavorite;
     Button favoriteButton;
+    private static boolean trailers_shrinked = false;
+    private static boolean reviews_shrinked = false;
 
     //Extra Variable:
     MovieDetails movieDetails;
@@ -60,8 +63,6 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
             favoriteButton.setText(getString(R.string.remove_movie_from_favorites));
         else
             favoriteButton.setText(getString(R.string.add_movie_to_favorites));
-
-        //TODO - check fi this movie is already a favorite. if is, set the heart icon to red
 
     }
 
@@ -110,7 +111,7 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
                 Double.toString(movieDetails.getVoteAvarage())
                 +" ("+movieDetails.getVoteCount()+" voters)");
 
-        ((TextView) findViewById(R.id.tv_release_date)).setText(getString(R.string.release_date)+movieDetails.getReleaseDate());
+        ((TextView) findViewById(R.id.tv_release_date)).setText(getString(R.string.release_date)+" "+movieDetails.getReleaseDate().replaceAll("-","/"));
         ((TextView) findViewById(R.id.tv_synopsis)).setText(movieDetails.getOverview());
     }
 
@@ -229,7 +230,8 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
     public void onLoadFinished(Loader<ArrayList<String>> loader, ArrayList<String> loaderResult) {
 
         if (loaderResult == null) {
-            Toast.makeText(this, getString(R.string.check_internet), Toast.LENGTH_LONG).show();
+            //Toast.makeText(this, getString(R.string.check_internet), Toast.LENGTH_LONG).show();
+            Log.i("denis", "MovieDetailsActivity - onLoadFinished returned null Arraylist");
             return;
         } else {
             //set textViews before trailers and reviews
@@ -240,7 +242,8 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
 
             //get the RecyclerView resource and bind to a GridLayoutManager
             RecyclerView mRecycleView = (RecyclerView) findViewById(R.id.rv_trailer_list);
-            LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+            //LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+            GridLayoutManager layoutManager = new GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false);
             mRecycleView.setLayoutManager(layoutManager);
             mRecycleView.setHasFixedSize(true);
             mRecycleView.setAdapter(new MovieTrailersAdapter(loaderResult, this));
@@ -272,5 +275,41 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    public void hideShowTrailers(View view){
+
+        TextView textView  = (TextView) view;
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_trailer_list);
+
+        if(trailers_shrinked) {
+            textView.setText(getString(R.string.trailers_expanded));
+            recyclerView.setVisibility(View.VISIBLE);
+            trailers_shrinked = false;
+
+        } else {
+            textView.setText(getString(R.string.trailers_shrinked));
+            recyclerView.setVisibility(View.GONE);
+            trailers_shrinked = true;
+        }
+
+    }
+
+    public void hideShowReviews(View view){
+
+        TextView textView  = (TextView) view;
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_review_list);
+
+        if(reviews_shrinked) {
+            textView.setText(getString(R.string.reviews_expanded));
+            recyclerView.setVisibility(View.VISIBLE);
+            reviews_shrinked = false;
+
+        } else {
+            textView.setText(getString(R.string.reviews_shrinked));
+            recyclerView.setVisibility(View.GONE);
+            reviews_shrinked = true;
+        }
+
     }
 }
