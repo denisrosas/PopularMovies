@@ -250,13 +250,12 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
             ProgressBar progressBar = (ProgressBar) findViewById(R.id.pbLoadMovieDetails);
             progressBar.setVisibility(View.INVISIBLE);
 
-            Log.i("denis", "LOADER_REVIEWS_FROM_TMDB");
+            RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.rv_review_list);
+            LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+            mRecyclerView.setLayoutManager(layoutManager);
+            mRecyclerView.setHasFixedSize(true);
+            mRecyclerView.setAdapter(new MovieReviewsAdapter(loaderResult, this));
 
-            for(String text : loaderResult){
-                String[] temp1 = text.split("@",2);
-                Log.i("denis", "onLoadFinished() - review author: " + temp1[0]);
-                Log.i("denis", "onLoadFinished() - review text: " + temp1[1]);
-            }
         }
     }
 
