@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -78,8 +77,6 @@ public class MovieTrailersAdapter extends RecyclerView.Adapter  <MovieTrailersAd
                 .appendPath(YOUTUBE_THUMBNAIL_FILE)
                 .build();
 
-        Log.i("MovieTrailerAdapter", "complete Link: "+ builtUri.toString());
-
         return builtUri;
     }
 
@@ -90,12 +87,10 @@ public class MovieTrailersAdapter extends RecyclerView.Adapter  <MovieTrailersAd
 
     class TrailerViewHolder extends RecyclerView.ViewHolder {
 
-        //TextView trailerTextView;
         ImageView trailerImageView;
 
         TrailerViewHolder(View itemView) {
             super(itemView);
-            //trailerTextView = (TextView) itemView.findViewById(R.id.tv_trailer_id);
             trailerImageView = (ImageView) itemView.findViewById(R.id.iv_trailer_thumbnail);
         }
     }

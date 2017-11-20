@@ -72,7 +72,7 @@ public class MoviesInfoFromTMDB extends AsyncTaskLoader<ArrayList<MovieDetails>>
         //download the favorite movies from the ContentPrivider
         Cursor cursor = activityContext.getContentResolver().query(uri, null, null, null, null);
 
-        Log.i("denis", cursor.getCount()+" favorite movies found in database");
+        Log.i("denis", "getFavoriteMoviesFromContProv() - "+cursor.getCount()+" favorite movies found in database");
 
         if(cursor.getCount()==0) {
             return favoriteMovies;
@@ -116,7 +116,6 @@ public class MoviesInfoFromTMDB extends AsyncTaskLoader<ArrayList<MovieDetails>>
             jsonObject = new JSONObject(jsonToParse);
             jsonArray = jsonObject.getJSONArray("results");
 
-            Log.i("denis Jsonarray", "posicao 0 do json: "+jsonArray.get(0));
         } catch (JSONException e) {
             e.printStackTrace();
             return null;
@@ -145,20 +144,11 @@ public class MoviesInfoFromTMDB extends AsyncTaskLoader<ArrayList<MovieDetails>>
                         maxOverviewName = movieDetailsList.get(index).getOverview();
                     }
 
-                    if(index<5){
-                        Log.i("denis", "Poster Path"+ movieDetailsList.get(index).getPosterPath());
-                    }
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
             }
-
-            Log.i("denis","maxTitleSize: "+maxTitleSize+" maxTitle: "+maxTitle);
-            Log.i("denis","maxOverviewSize: "+maxOverviewSize+" maxOverviewName: "+ maxOverviewName);
-
-            //NetworkUtils.buildAndDownloadReviewsList(activityContext.getString(R.string.tmdb_api_key), 440021);
 
             return movieDetailsList;
 

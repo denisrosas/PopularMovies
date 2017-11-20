@@ -2,6 +2,7 @@ package com.example.android.popularmovies;
 
 import android.graphics.Point;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
@@ -21,6 +22,9 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<ArrayList<MovieDetails>> {
 
+    RecyclerView mRecycleView;
+    Parcelable layoutManagerSavedState = null;
+
     public static final int SORT_BY_POPULARITY = 0;
     public static final int SORT_BY_TOP_RATED = 1;
     public static final int SORT_BY_FAVORITES = 2;
@@ -28,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public static int sortType = SORT_BY_POPULARITY;
 
     public static final String BUNDLE_SORTTYPE = "bundle_sortType";
+    public static final String BUNDLE_LAYOUT_MANAGER = "bundle_layout_manager";
     public static int LAYOUT_NUM_COLUMS;
 
     private static final int LOADER_MOVIES_FROM_TMDB = 31;
@@ -39,10 +44,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //clear all views of the recyclerView
         clearRecyclerView();
 
         //this app was designed to portrait mode only
-        setNumColumsBasedOnDisplaySize();
+        setNumColumnsBasedOnDisplaySize();
 
         //loader Task will download the Movie list from TMDB page
         startLoaderTask(LOADER_MOVIES_FROM_TMDB);
@@ -67,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 (item.getItemId()==R.id.sort_by_top_rated)||
                 (item.getItemId()==R.id.my_favorite_movies)) {
 
+            //check if user is already in the selected option
             if(((item.getItemId() == R.id.sort_by_popularity)&&(sortType == SORT_BY_POPULARITY))
                     ||((item.getItemId() == R.id.sort_by_top_rated)&&(sortType == SORT_BY_TOP_RATED))
                     ||((item.getItemId() == R.id.my_favorite_movies)&&(sortType == SORT_BY_FAVORITES))) {
@@ -75,14 +82,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 return super.onOptionsItemSelected(item);
             }
 
-            clearRecyclerView();
-
             //set sortType global variable
             if(item.getItemId() == R.id.sort_by_popularity)  {sortType = SORT_BY_POPULARITY;}
             else if (item.getItemId() == R.id.sort_by_top_rated) {sortType = SORT_BY_TOP_RATED;}
             else if (item.getItemId() == R.id.my_favorite_movies) {sortType = SORT_BY_FAVORITES;}
 
-            //start Loader Task to do load the movie details
+            //clear the recyclerview and start Loader Task to do load the movie lists again
+            clearRecyclerView();
             LoaderManager loaderManager = getSupportLoaderManager();
 
             if(sortType==SORT_BY_FAVORITES){
@@ -96,6 +102,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         return super.onOptionsItemSelected(item);
     }
 
+    //help method to start a Loader
     private void startLoaderTask(int loaderId){
 
         LoaderManager loaderManager = getSupportLoaderManager();
@@ -108,7 +115,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         }
     }
 
-    private void setNumColumsBasedOnDisplaySize(){
+    //checks the display resolution and set the image size
+    private void setNumColumnsBasedOnDisplaySize(){
 
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
@@ -126,6 +134,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         }
     }
 
+    //clear all views (Movie Images in this case) of the RecyclerView
     private void clearRecyclerView() {
         //clear all vies in recyclerview
         RecyclerView mRecycleView = (RecyclerView) findViewById(R.id.rv_movie_posters);
@@ -135,9 +144,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public Loader<ArrayList<MovieDetails>> onCreateLoader(int id, final Bundle args) {
 
-        //Extraimos os dados do Bundle
         if ((id==LOADER_MOVIES_FROM_TMDB)||(id==LOADER_FAV_MOVIES_FROM_DATABASE)) {
-//            String queryType = args.getString("QueryType");
             return new MoviesInfoFromTMDB(this);
         }
         return null;
@@ -161,9 +168,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         }
 
         //get the RecyclerView resource and bind to a GridLayoutManager
-        RecyclerView mRecycleView = (RecyclerView) findViewById(R.id.rv_movie_posters);
+        mRecycleView = (RecyclerView) findViewById(R.id.rv_movie_posters);
         GridLayoutManager layoutManager = new GridLayoutManager(this, MainActivity.LAYOUT_NUM_COLUMS);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+
+        //restoring the scroll position
+        if(layoutManagerSavedState!=null)
+            layoutManager.onRestoreInstanceState(layoutManagerSavedState);
+
         mRecycleView.setLayoutManager(layoutManager);
         mRecycleView.setHasFixedSize(true);
         mRecycleView.setAdapter(new MoviePosterAdapter(movieDetailsArrayList, this));
@@ -179,12 +191,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(BUNDLE_SORTTYPE, sortType);
+        outState.putParcelable(BUNDLE_LAYOUT_MANAGER, mRecycleView.getLayoutManager().onSaveInstanceState());
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         sortType = savedInstanceState.getInt(BUNDLE_SORTTYPE);
+        layoutManagerSavedState = savedInstanceState.getParcelable(BUNDLE_LAYOUT_MANAGER);
     }
 
 }

@@ -65,8 +65,6 @@ public class MoviePosterAdapter extends RecyclerView.Adapter <MoviePosterAdapter
             @Override
             public void onClick(View view) {
 
-                Log.i("denis OnClickListener", "a tag da view eh "+view.getTag());
-
                 Intent i = new Intent(activityContext, MovieDetailsActivity.class);
 
                 //We're sending 4 variables to MovieDetailsActivity

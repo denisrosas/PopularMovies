@@ -102,8 +102,6 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
 
         Uri image_uri = returnImageUri(movieDetails.getPosterPath());
 
-        Log.i("denis","image_uri: "+image_uri.toString());
-
         Picasso.with(this).load(image_uri.toString()).into((ImageView)findViewById(R.id.iv_detail_poster));
 
         ((TextView) findViewById(R.id.tv_movie_title)).setText(movieDetails.getTitle());
@@ -205,11 +203,10 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
         if (cursor.getCount()==1){
             cursor.close();
             return true;
-        } else if (cursor.getCount()==0){
+        } else {
             cursor.close();
             return false;
         }
-        return false;
     }
 
     @Override

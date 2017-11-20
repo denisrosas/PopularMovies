@@ -130,12 +130,10 @@ final class NetworkUtils {
             e.printStackTrace();
         }
 
-        Log.i("denis ", "jsonArray: "+jsonArray.toString());
         //for all reviews in the JSON get get the Author and Content and store in reviewsList var
         for(int index=0; index<jsonArray.length(); index++){
             try{
                 reviewsList.add(parseJSONGetAuthorAndContent(jsonArray.getJSONObject(index)));
-                Log.i("denis Reviews", "reviewsList posicao "+index+" armazenou: "+reviewsList.get(index));
             } catch (Exception e){
                 e.printStackTrace();
             }
@@ -161,7 +159,6 @@ final class NetworkUtils {
                 for(int index=0; index<jsonArray.length(); index++){
                     try{
                         reviewsList.add(parseJSONGetAuthorAndContent(jsonArray.getJSONObject(index)));
-                        Log.i("denis Reviews", "reviewsList pagina: "+current_page+" posicao: "+(index+5)+" armazenou: "+reviewsList.get(index+5));
                     } catch (Exception e){
                         e.printStackTrace();
                     }
@@ -230,12 +227,11 @@ final class NetworkUtils {
             return trailerList;
         }
 
-        Log.i("denis ", "jsonArray: "+jsonArray.toString());
         //for all videos in the JSON get get the Key and store in trailerList var
         for(int index=0; index<jsonArray.length(); index++){
             try{
                 trailerList.add(parseJSONGetTrailerList(jsonArray.getJSONObject(index)));
-                Log.i("denis Trailer", "trailerList posicao "+index+" armazenou: "+trailerList.get(index));
+                //Log.i("denis Trailer", "trailerList posicao "+index+" armazenou: "+trailerList.get(index));
             } catch (Exception e){
                 e.printStackTrace();
             }
@@ -268,7 +264,6 @@ final class NetworkUtils {
     public static String getResponseFromHttpUrl(URL url) throws IOException {
         String jsonReturn = "";
         HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
-        Log.i("denis ", "getResponseFromHttpUrl: entrou");
 
         try {
             InputStream inputStream = urlConnection.getInputStream();
@@ -277,13 +272,11 @@ final class NetworkUtils {
             scanner.useDelimiter("\\A");
 
             if(!scanner.hasNext()){
-                Log.i("denis ", "(!scanner.hasNext()) entrou");
                 return null;
             }
 
             while(scanner.hasNext()){
                 jsonReturn = jsonReturn.concat(scanner.next());
-                Log.i("denis ", "(scanner.hasNext())==true");
             }
             //Log.i("denis ", "jsonReturn: "+jsonReturn);
             return jsonReturn;
