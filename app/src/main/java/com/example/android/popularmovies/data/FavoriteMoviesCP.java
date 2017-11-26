@@ -12,15 +12,15 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.example.android.popularmovies.data.favoriteMoviesContract.FavoriteMoviesEntry;
+import com.example.android.popularmovies.data.FavoriteMoviesContract.FavoriteMoviesEntry;
 
-import static com.example.android.popularmovies.data.favoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_ID;
-
-
-public class favoriteMoviesCP extends ContentProvider{
+import static com.example.android.popularmovies.data.FavoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_ID;
 
 
-    favoriteMoviesDbHelper DbHelper;
+public class FavoriteMoviesCP extends ContentProvider{
+
+
+    FavoriteMoviesDbHelper DbHelper;
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     public static final int FAV_MOVIES = 100;
     public static final int FAV_MOVIES_WITH_ID = 101;
@@ -28,7 +28,7 @@ public class favoriteMoviesCP extends ContentProvider{
     @Override
     public boolean onCreate() {
         Context context = getContext();
-        DbHelper = new favoriteMoviesDbHelper(context);
+        DbHelper = new FavoriteMoviesDbHelper(context);
         return true;
     }
 
@@ -38,10 +38,10 @@ public class favoriteMoviesCP extends ContentProvider{
         UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
         //this case is for query, insert
-        uriMatcher.addURI(favoriteMoviesContract.AUTHORITY, favoriteMoviesContract.FAVORITE_MOVIES_PATH, FAV_MOVIES);
+        uriMatcher.addURI(FavoriteMoviesContract.AUTHORITY, FavoriteMoviesContract.FAVORITE_MOVIES_PATH, FAV_MOVIES);
 
         //this case is for delete only
-        uriMatcher.addURI(favoriteMoviesContract.AUTHORITY, favoriteMoviesContract.FAVORITE_MOVIES_PATH+"/#", FAV_MOVIES_WITH_ID);
+        uriMatcher.addURI(FavoriteMoviesContract.AUTHORITY, FavoriteMoviesContract.FAVORITE_MOVIES_PATH+"/#", FAV_MOVIES_WITH_ID);
 
         return uriMatcher;
     }
@@ -61,7 +61,7 @@ public class favoriteMoviesCP extends ContentProvider{
 
                 String[] columns = {COLUMN_MOVIE_ID};
                 //this content provider returns all movies in favoritemovies table
-                cursor = database.query(favoriteMoviesContract.FavoriteMoviesEntry.TABLE_NAME,
+                cursor = database.query(FavoriteMoviesContract.FavoriteMoviesEntry.TABLE_NAME,
                         null, //get all columns
                         null, //get all rows from table
                         null,
@@ -74,7 +74,7 @@ public class favoriteMoviesCP extends ContentProvider{
                 String movie_id = uri.getPathSegments().get(1);
                 String where_clause = COLUMN_MOVIE_ID+ "= '"+movie_id+"'"; //we want only movie_id
 
-                cursor = database.query(favoriteMoviesContract.FavoriteMoviesEntry.TABLE_NAME,
+                cursor = database.query(FavoriteMoviesContract.FavoriteMoviesEntry.TABLE_NAME,
                         null, //get all columns
                         where_clause, //where clause
                         null,
@@ -111,12 +111,12 @@ public class favoriteMoviesCP extends ContentProvider{
 
         switch (match){
             case FAV_MOVIES:
-                long id = database.insert(favoriteMoviesContract.FavoriteMoviesEntry.TABLE_NAME,
+                long id = database.insert(FavoriteMoviesContract.FavoriteMoviesEntry.TABLE_NAME,
                         null, contentValues);
 
                 if(id >  0) {
                     //buiding the URI to access this new favorite movie
-                    returnUri = ContentUris.withAppendedId(favoriteMoviesContract.FavoriteMoviesEntry.CONTENT_URI, id);
+                    returnUri = ContentUris.withAppendedId(FavoriteMoviesContract.FavoriteMoviesEntry.CONTENT_URI, id);
 
                     //alert the main activity of the changes
                     getContext().getContentResolver().notifyChange(uri, null);

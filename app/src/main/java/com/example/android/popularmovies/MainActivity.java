@@ -90,13 +90,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             //clear the recyclerview and start Loader Task to do load the movie lists again
             clearRecyclerView();
             LoaderManager loaderManager = getSupportLoaderManager();
+            (findViewById(R.id.progressBar)).setVisibility(View.VISIBLE);
 
             if(sortType==SORT_BY_FAVORITES){
                 startLoaderTask(LOADER_FAV_MOVIES_FROM_DATABASE);
             } else {
                 startLoaderTask(LOADER_MOVIES_FROM_TMDB);
             }
-            (findViewById(R.id.progressBar)).setVisibility(View.VISIBLE);
         }
 
         return super.onOptionsItemSelected(item);
@@ -105,14 +105,17 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     //help method to start a Loader
     private void startLoaderTask(int loaderId){
 
-        LoaderManager loaderManager = getSupportLoaderManager();
-        Loader<ArrayList<MovieDetails>> loaderTaskTrailers = loaderManager.getLoader(loaderId);
+        if(NetworkUtils.isNetworkConnected(this)) {
+            LoaderManager loaderManager = getSupportLoaderManager();
+            Loader<ArrayList<MovieDetails>> loaderTaskTrailers = loaderManager.getLoader(loaderId);
 
-        if(loaderTaskTrailers == null) {
-            loaderManager.initLoader(loaderId, null, this);
-        } else {
-            loaderManager.restartLoader(loaderId, null, this);
-        }
+            if (loaderTaskTrailers == null) {
+                loaderManager.initLoader(loaderId, null, this);
+            } else {
+                loaderManager.restartLoader(loaderId, null, this);
+            }
+        } else
+            (findViewById(R.id.progressBar)).setVisibility(View.INVISIBLE);
     }
 
     //checks the display resolution and set the image size
@@ -191,7 +194,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(BUNDLE_SORTTYPE, sortType);
-        outState.putParcelable(BUNDLE_LAYOUT_MANAGER, mRecycleView.getLayoutManager().onSaveInstanceState());
+
+        if(mRecycleView!=null)
+            outState.putParcelable(BUNDLE_LAYOUT_MANAGER, mRecycleView.getLayoutManager().onSaveInstanceState());
     }
 
     @Override

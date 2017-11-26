@@ -44,9 +44,9 @@ final class NetworkUtils {
     private final static String JSON_VIDEOS_KEY = "key";
     private final static String JSON_VIDEOS_YOUTUBE = "YouTube";
 
+    private final static int CONNECTION_TIMEOUT = 10000;
 
-
-    public static URL buildUrlMovieList(String api_key) {
+    static URL buildUrlMovieList(String api_key) {
 
         URL url;
 
@@ -76,7 +76,7 @@ final class NetworkUtils {
         return url;
     }
 
-    public static URL buildUrlReviewList(String api_key, int movieID, int page) {
+    private static URL buildUrlReviewList(String api_key, int movieID, int page) {
 
         URL url = null;
         //build an URI to get the reviews
@@ -98,7 +98,7 @@ final class NetworkUtils {
         return url;
     }
 
-    public static ArrayList<String> buildAndDownloadReviewsList(String api_key, int movieID) {
+    static ArrayList<String> buildAndDownloadReviewsList(String api_key, int movieID) {
 
         URL url = null;
         JSONObject jsonObject;
@@ -169,7 +169,7 @@ final class NetworkUtils {
         return reviewsList;
     }
 
-    public static String parseJSONGetAuthorAndContent(JSONObject jsonObject){
+    private static String parseJSONGetAuthorAndContent(JSONObject jsonObject){
         String reviewInfo = "";
 
         try {
@@ -182,7 +182,7 @@ final class NetworkUtils {
         return reviewInfo;
     }
 
-    public static URL buildUrlTrailerList(String api_key, int movieID) {
+    private static URL buildUrlTrailerList(String api_key, int movieID) {
 
         URL url = null;
         //build an URI to get the reviews
@@ -203,7 +203,7 @@ final class NetworkUtils {
         return url;
     }
 
-    public static ArrayList<String> buildAndDownloadTrailerList(String api_key, int movieID){
+    static ArrayList<String> buildAndDownloadTrailerList(String api_key, int movieID){
 
         URL url = null;
         JSONObject jsonObject, jsonObjectReviews = null;
@@ -261,9 +261,10 @@ final class NetworkUtils {
     }
 
     //this method receives an URL and returns a String with the downloaded content
-    public static String getResponseFromHttpUrl(URL url) throws IOException {
+    static String getResponseFromHttpUrl(URL url) throws IOException {
         String jsonReturn = "";
         HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
+        urlConnection.setConnectTimeout(CONNECTION_TIMEOUT); //connection is closed after 7 seconds
 
         try {
             InputStream inputStream = urlConnection.getInputStream();
@@ -278,7 +279,6 @@ final class NetworkUtils {
             while(scanner.hasNext()){
                 jsonReturn = jsonReturn.concat(scanner.next());
             }
-            //Log.i("denis ", "jsonReturn: "+jsonReturn);
             return jsonReturn;
 
         } catch (Exception e){
@@ -290,14 +290,17 @@ final class NetworkUtils {
         return null;
     }
 
+    //ONLY call this method on the MAIN THREAD
     static boolean isNetworkConnected(Context activityContext) {
         ConnectivityManager cm = (ConnectivityManager) activityContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean returnbool = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        boolean returnBool = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
 
-        if(!returnbool)
+        if(!returnBool) {
             Toast.makeText(activityContext, activityContext.getString(R.string.check_internet), Toast.LENGTH_LONG).show();
-        return returnbool;
+            Log.i("denis", "isNetworkConnected() - Network connection check Failed. No Internet Connection");
+        }
+        return returnBool;
     }
 
 }

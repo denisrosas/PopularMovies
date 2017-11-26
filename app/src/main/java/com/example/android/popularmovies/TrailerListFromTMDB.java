@@ -20,10 +20,7 @@ class TrailerListFromTMDB extends AsyncTaskLoader<ArrayList<String>>{
 
     @Override
     public ArrayList<String> loadInBackground() {
-        if(NetworkUtils.isNetworkConnected(context))
-            return NetworkUtils.buildAndDownloadTrailerList(apikey, movieId);
-        else
-            return null;
+        return NetworkUtils.buildAndDownloadTrailerList(apikey, movieId);
     }
 
     @Override

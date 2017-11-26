@@ -4,7 +4,6 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="com.example.android.popularmovies.TERMS_READ" />
 
     <application
         android:allowBackup="true"
@@ -27,7 +26,7 @@
         <activity android:name=".MovieDetailsActivity" />
 
         <provider
-            android:name=".data.favoriteMoviesCP"
+            android:name=".data.FavoriteMoviesCP"
             android:authorities="com.example.android.popularmovies"
             android:exported="false" />
 

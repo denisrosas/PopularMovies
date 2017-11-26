@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.PersistableBundle;
+import android.os.Parcelable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
@@ -20,10 +20,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.android.popularmovies.data.favoriteMoviesContract;
+import com.example.android.popularmovies.data.FavoriteMoviesContract;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -39,6 +40,16 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
     Button favoriteButton;
     private static boolean trailers_shrinked = false;
     private static boolean reviews_shrinked = false;
+    private static String BUNDLE_TRAILERS_SHRINKED = "TRAILERS_SHRINKED";
+    private static String BUNDLE_REVIEWS_SHRINKED = "REVIEWS_SHRINKED";
+    private static String BUNDLE_TRAILERS_REC_VIEW = "TRAILERS_REC_VIEW";
+    private static String BUNDLE_REVIEWS_REC_VIEW = "REVIEWS_REC_VIEW";
+    private static String BUNDLE_SCROLL_POSITION = "SCROLL_POSITION";
+
+    Parcelable layoutManSavedStateTrailers = null;
+    Parcelable layoutManSavedStateReviews = null;
+
+    private static int scrollY = 0;
 
     //Extra Variable:
     MovieDetails movieDetails;
@@ -115,16 +126,23 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
 
     private void startLoaderTask(int loaderId){
 
-        Bundle bundle = new Bundle();
+        if(NetworkUtils.isNetworkConnected(this)) {
 
-        LoaderManager loaderManager = getSupportLoaderManager();
-        Loader<ArrayList<String>> loaderTaskTrailers = loaderManager.getLoader(loaderId);
+            Bundle bundle = new Bundle();
 
-        if(loaderTaskTrailers == null) {
-            loaderManager.initLoader(loaderId, bundle, this);
-        } else {
-            loaderManager.restartLoader(loaderId, bundle, this);
+            LoaderManager loaderManager = getSupportLoaderManager();
+            Loader<ArrayList<String>> loaderTaskTrailers = loaderManager.getLoader(loaderId);
+
+            if (loaderTaskTrailers == null) {
+                loaderManager.initLoader(loaderId, bundle, this);
+            } else {
+                loaderManager.restartLoader(loaderId, bundle, this);
+            }
+        } else{
+            ProgressBar progressBar = (ProgressBar) findViewById(R.id.pbLoadMovieDetails);
+            progressBar.setVisibility(View.INVISIBLE);
         }
+
     }
 
     private MovieDetails getExtraVariablesFromIntent() {
@@ -153,17 +171,17 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
            if(!movieIsFavorite) {
 
                //insert movie in favorites database
-               Uri uri = favoriteMoviesContract.FavoriteMoviesEntry.CONTENT_URI;
+               Uri uri = FavoriteMoviesContract.FavoriteMoviesEntry.CONTENT_URI;
                uri = uri.buildUpon().build();
 
                ContentValues contentValues = new ContentValues();
-               contentValues.put(favoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_ID, movieDetails.getId());
-               contentValues.put(favoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_TITLE, movieDetails.getTitle());
-               contentValues.put(favoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_OVERVIEW, movieDetails.getOverview());
-               contentValues.put(favoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_POSTER_PATH, movieDetails.getPosterPath());
-               contentValues.put(favoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_RELEASE_DATE, movieDetails.getReleaseDate());
-               contentValues.put(favoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_VOTE_AVERAGE, movieDetails.getVoteAvarage());
-               contentValues.put(favoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_VOTE_COUNT, movieDetails.getVoteCount());
+               contentValues.put(FavoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_ID, movieDetails.getId());
+               contentValues.put(FavoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_TITLE, movieDetails.getTitle());
+               contentValues.put(FavoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_OVERVIEW, movieDetails.getOverview());
+               contentValues.put(FavoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_POSTER_PATH, movieDetails.getPosterPath());
+               contentValues.put(FavoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_RELEASE_DATE, movieDetails.getReleaseDate());
+               contentValues.put(FavoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_VOTE_AVERAGE, movieDetails.getVoteAvarage());
+               contentValues.put(FavoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_VOTE_COUNT, movieDetails.getVoteCount());
 
                Uri resultUri = null;
                resultUri = getContentResolver().insert(uri, contentValues);
@@ -175,7 +193,7 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
 
            } else{
 
-               Uri uri = favoriteMoviesContract.FavoriteMoviesEntry.CONTENT_URI;
+               Uri uri = FavoriteMoviesContract.FavoriteMoviesEntry.CONTENT_URI;
                uri = uri.buildUpon().appendPath(Integer.toString(movieDetails.getId())).build();
 
                int deleteCount = getContentResolver().delete(uri, null, null);
@@ -195,7 +213,7 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
 
     private boolean isMovieInFavoriteList(int movieId) {
 
-        Uri uri = favoriteMoviesContract.FavoriteMoviesEntry.CONTENT_URI;
+        Uri uri = FavoriteMoviesContract.FavoriteMoviesEntry.CONTENT_URI;
         uri = uri.buildUpon().appendPath(Integer.toString(movieId)).build();
 
         Cursor cursor = getContentResolver().query(uri, null, null, null, null);
@@ -241,6 +259,12 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
             RecyclerView mRecycleView = (RecyclerView) findViewById(R.id.rv_trailer_list);
             //LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
             GridLayoutManager layoutManager = new GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false);
+
+            //restoring the scroll position
+            if(layoutManSavedStateTrailers!=null){
+                layoutManager.onRestoreInstanceState(layoutManSavedStateTrailers);
+            }
+
             mRecycleView.setLayoutManager(layoutManager);
             mRecycleView.setHasFixedSize(true);
             mRecycleView.setAdapter(new MovieTrailersAdapter(loaderResult, this));
@@ -252,11 +276,27 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
 
             RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.rv_review_list);
             LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+
+            //restoring the scroll position
+            if(layoutManSavedStateReviews!=null){
+                layoutManager.onRestoreInstanceState(layoutManSavedStateReviews);
+            }
+
             mRecyclerView.setLayoutManager(layoutManager);
             mRecyclerView.setHasFixedSize(true);
             mRecyclerView.setAdapter(new MovieReviewsAdapter(loaderResult, this));
 
         }
+
+        //restore scroll position after the recyclerviews are filled
+        final ScrollView scrollView = (ScrollView) findViewById(R.id.scrollViewMovieDetails);
+        scrollView.post(new Runnable() {
+            @Override
+            public void run() {
+                scrollView.scrollTo(0, scrollY);
+            }
+        });
+
     }
 
     @Override
@@ -265,13 +305,61 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
-        super.onSaveInstanceState(outState, outPersistentState);
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        //store in bundle if the RecyclerViews are shrinked
+        outState.putBoolean(BUNDLE_TRAILERS_SHRINKED, trailers_shrinked);
+        outState.putBoolean(BUNDLE_REVIEWS_SHRINKED, reviews_shrinked);
+
+        //store on a bundle the scrollView position of the recyclerViews (trailer and reviews)
+        RecyclerView recViewTrailers = (RecyclerView) findViewById(R.id.rv_trailer_list);
+        RecyclerView recViewReviews = (RecyclerView) findViewById(R.id.rv_review_list);
+
+        outState.putParcelable(BUNDLE_REVIEWS_REC_VIEW, recViewTrailers.getLayoutManager().onSaveInstanceState());
+        outState.putParcelable(BUNDLE_TRAILERS_REC_VIEW, recViewTrailers.getLayoutManager().onSaveInstanceState());
+
+        //saving the scroll position
+        ScrollView scrollView = (ScrollView) findViewById(R.id.scrollViewMovieDetails);
+        outState.putInt(BUNDLE_SCROLL_POSITION, scrollView.getScrollY());
+
+        Log.i("denis","onSaveInstanceState - trailers_shrinked: "+trailers_shrinked);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
+
+        TextView textView;
+        RecyclerView recyclerView;
+
+        //Restoring if trailers and reviews is schrinked
+        //either if BUNDLE_TRAILERS_SHRINKED is false or is not saved in the bundle, the default is false
+        if(savedInstanceState.getBoolean(BUNDLE_TRAILERS_SHRINKED, false)){
+            textView  = (TextView) findViewById(R.id.tv_trailer_title);
+            recyclerView = (RecyclerView) findViewById(R.id.rv_trailer_list);
+            textView.setText(getString(R.string.trailers_shrinked));
+            recyclerView.setVisibility(View.GONE);
+            trailers_shrinked = true;
+        } else
+            trailers_shrinked = false;
+
+        if(savedInstanceState.getBoolean(BUNDLE_REVIEWS_SHRINKED, false)){
+            textView = (TextView) findViewById(R.id.tv_reviews_title);
+            recyclerView = (RecyclerView) findViewById(R.id.rv_review_list);
+            textView.setText(getString(R.string.reviews_shrinked));
+            recyclerView.setVisibility(View.GONE);
+            reviews_shrinked = true;
+        } else
+            reviews_shrinked = false;
+
+        //restoring the recylerviews state to global variables
+        layoutManSavedStateReviews = savedInstanceState.getParcelable(BUNDLE_REVIEWS_REC_VIEW);
+        layoutManSavedStateTrailers = savedInstanceState.getParcelable(BUNDLE_TRAILERS_REC_VIEW);
+
+        //restoring the scroll position
+        scrollY = savedInstanceState.getInt(BUNDLE_SCROLL_POSITION);
+
     }
 
     public void hideShowTrailers(View view){

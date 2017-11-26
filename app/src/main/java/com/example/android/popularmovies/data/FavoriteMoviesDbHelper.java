@@ -6,21 +6,21 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import static com.example.android.popularmovies.data.favoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_ID;
-import static com.example.android.popularmovies.data.favoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_OVERVIEW;
-import static com.example.android.popularmovies.data.favoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_POSTER_PATH;
-import static com.example.android.popularmovies.data.favoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_RELEASE_DATE;
-import static com.example.android.popularmovies.data.favoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_TITLE;
-import static com.example.android.popularmovies.data.favoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_VOTE_AVERAGE;
-import static com.example.android.popularmovies.data.favoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_VOTE_COUNT;
-import static com.example.android.popularmovies.data.favoriteMoviesContract.FavoriteMoviesEntry.TABLE_NAME;
-import static com.example.android.popularmovies.data.favoriteMoviesContract.FavoriteMoviesEntry._ID;
+import static com.example.android.popularmovies.data.FavoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_ID;
+import static com.example.android.popularmovies.data.FavoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_OVERVIEW;
+import static com.example.android.popularmovies.data.FavoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_POSTER_PATH;
+import static com.example.android.popularmovies.data.FavoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_RELEASE_DATE;
+import static com.example.android.popularmovies.data.FavoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_TITLE;
+import static com.example.android.popularmovies.data.FavoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_VOTE_AVERAGE;
+import static com.example.android.popularmovies.data.FavoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_VOTE_COUNT;
+import static com.example.android.popularmovies.data.FavoriteMoviesContract.FavoriteMoviesEntry.TABLE_NAME;
+import static com.example.android.popularmovies.data.FavoriteMoviesContract.FavoriteMoviesEntry._ID;
 
 /**
  * Created by Denis on 08/11/2017.
  */
 
-public class favoriteMoviesDbHelper extends SQLiteOpenHelper {
+public class FavoriteMoviesDbHelper extends SQLiteOpenHelper {
 
     // The name of the database
     private static final String DATABASE_NAME = "favoriteMoviesDb.db";
@@ -28,7 +28,7 @@ public class favoriteMoviesDbHelper extends SQLiteOpenHelper {
     // If you change the database schema, you must increment the database version
     private static final int VERSION = 1;
 
-    public favoriteMoviesDbHelper(Context context) {
+    public FavoriteMoviesDbHelper(Context context) {
         super(context, DATABASE_NAME, null, VERSION);
     }
 

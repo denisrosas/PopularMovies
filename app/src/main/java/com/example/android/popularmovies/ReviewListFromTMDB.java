@@ -20,10 +20,7 @@ public class ReviewListFromTMDB extends AsyncTaskLoader<ArrayList<String>>{
 
     @Override
     public ArrayList<String> loadInBackground() {
-        if(NetworkUtils.isNetworkConnected(context))
-            return NetworkUtils.buildAndDownloadReviewsList(apikey, movieId);
-        else
-            return null;
+        return NetworkUtils.buildAndDownloadReviewsList(apikey, movieId);
     }
 
     @Override

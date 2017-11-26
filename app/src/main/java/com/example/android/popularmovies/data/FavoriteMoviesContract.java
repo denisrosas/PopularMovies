@@ -4,7 +4,7 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 
 
-public class favoriteMoviesContract {
+public class FavoriteMoviesContract {
     // The authority, which is how your code knows which Content Provider to access
     public static final String AUTHORITY = "com.example.android.popularmovies";
 

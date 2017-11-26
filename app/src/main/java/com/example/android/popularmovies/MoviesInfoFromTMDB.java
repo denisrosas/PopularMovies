@@ -6,7 +6,7 @@ import android.net.Uri;
 import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
-import com.example.android.popularmovies.data.favoriteMoviesContract;
+import com.example.android.popularmovies.data.FavoriteMoviesContract;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,34 +27,29 @@ public class MoviesInfoFromTMDB extends AsyncTaskLoader<ArrayList<MovieDetails>>
     @Override
     public ArrayList<MovieDetails> loadInBackground() {
 
-        if(NetworkUtils.isNetworkConnected(activityContext)) {
+        if(MainActivity.sortType == MainActivity.SORT_BY_FAVORITES){
 
-            if(MainActivity.sortType == MainActivity.SORT_BY_FAVORITES){
+            return getFavoriteMoviesFromContProv();
 
-                return getFavoriteMoviesFromContProv();
+        } else{
+            //build the URI
+            URL tmdbMoviesRequestUrl = NetworkUtils.buildUrlMovieList(activityContext.getString(R.string.tmdb_api_key));
+            String jsonTMDBMovieList = "";
 
-            } else{
-                //build the URI
-                URL tmdbMoviesRequestUrl = NetworkUtils.buildUrlMovieList(activityContext.getString(R.string.tmdb_api_key));
-                String jsonTMDBMovieList = "";
+            try {
+                //download the JSON in this separated thread
+                jsonTMDBMovieList = NetworkUtils
+                        .getResponseFromHttpUrl(tmdbMoviesRequestUrl);
 
-                try {
-                    //download the JSON in this separated thread
-                    jsonTMDBMovieList = NetworkUtils
-                            .getResponseFromHttpUrl(tmdbMoviesRequestUrl);
-
-                    if (jsonTMDBMovieList != null) {
-                        //Parse the JSON to get the movie list
-                        Log.i("denis getMoviesInfo", "jsonTMDBMovieList length: " + jsonTMDBMovieList.length());
-                        return returnMoviesArrayList(jsonTMDBMovieList);
-                    }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
+                if (jsonTMDBMovieList != null) {
+                    //Parse the JSON to get the movie list
+                    Log.i("denis getMoviesInfo", "jsonTMDBMovieList length: " + jsonTMDBMovieList.length());
+                    return returnMoviesArrayList(jsonTMDBMovieList);
                 }
 
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-
 
         }
 
@@ -64,7 +59,7 @@ public class MoviesInfoFromTMDB extends AsyncTaskLoader<ArrayList<MovieDetails>>
     private ArrayList<MovieDetails> getFavoriteMoviesFromContProv() {
 
         //build the uri to get all movies marked as favorite
-        Uri uri = favoriteMoviesContract.FavoriteMoviesEntry.CONTENT_URI;
+        Uri uri = FavoriteMoviesContract.FavoriteMoviesEntry.CONTENT_URI;
         uri = uri.buildUpon().build();
 
         ArrayList<MovieDetails> favoriteMovies = new ArrayList<>();
@@ -82,13 +77,13 @@ public class MoviesInfoFromTMDB extends AsyncTaskLoader<ArrayList<MovieDetails>>
 
         do {
             MovieDetails movieDetails = new MovieDetails(
-                    cursor.getInt(cursor.getColumnIndex(favoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_VOTE_COUNT)),
-                    cursor.getInt(cursor.getColumnIndex(favoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_ID)),
-                    cursor.getDouble(cursor.getColumnIndex(favoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_VOTE_AVERAGE)),
-                    cursor.getString(cursor.getColumnIndex(favoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_TITLE)),
-                    cursor.getString(cursor.getColumnIndex(favoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_POSTER_PATH)),
-                    cursor.getString(cursor.getColumnIndex(favoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_OVERVIEW)),
-                    cursor.getString(cursor.getColumnIndex(favoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_RELEASE_DATE))
+                    cursor.getInt(cursor.getColumnIndex(FavoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_VOTE_COUNT)),
+                    cursor.getInt(cursor.getColumnIndex(FavoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_ID)),
+                    cursor.getDouble(cursor.getColumnIndex(FavoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_VOTE_AVERAGE)),
+                    cursor.getString(cursor.getColumnIndex(FavoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_TITLE)),
+                    cursor.getString(cursor.getColumnIndex(FavoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_POSTER_PATH)),
+                    cursor.getString(cursor.getColumnIndex(FavoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_OVERVIEW)),
+                    cursor.getString(cursor.getColumnIndex(FavoriteMoviesContract.FavoriteMoviesEntry.COLUMN_MOVIE_RELEASE_DATE))
             );
             favoriteMovies.add(movieDetails);
         } while (cursor.moveToNext());
