@@ -185,24 +185,30 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
 
                Uri resultUri = null;
                resultUri = getContentResolver().insert(uri, contentValues);
+               Log.i("MovieDetailsActivity", "addDeleteMovieFavorites() - resultUri: " + resultUri.toString());
+
                if(resultUri!=null) {
                    favoriteButton.setText(getString(R.string.remove_movie_from_favorites));
                    movieIsFavorite = true;
+                   Log.i("MovieDetailsActivity", "addDeleteMovieFavorites() - movie successfully added to favorite list");
+               } else {
+                   Log.i("MovieDetailsActivity", "addDeleteMovieFavorites() - failed to add movie to favorite list");
                }
-               Log.i("denis", "MovieDetailsActivity - uri: " + resultUri.toString());
 
            } else{
 
                Uri uri = FavoriteMoviesContract.FavoriteMoviesEntry.CONTENT_URI;
                uri = uri.buildUpon().appendPath(Integer.toString(movieDetails.getId())).build();
 
+               Log.i("MovieDetailsActivity", "addDeleteMovieFavorites() - uri: " + uri.toString());
+
                int deleteCount = getContentResolver().delete(uri, null, null);
                if(deleteCount==1){
                    favoriteButton.setText(getString(R.string.add_movie_to_favorites));
                    movieIsFavorite=false;
-                   Log.i("denis", "MovieDetailsActivity - addDeleteMovieFavorites - movie Successfully Removed from Favorites");
+                   Log.i("MovieDetailsActivity", "addDeleteMovieFavorites() - movie Successfully Removed from Favorites");
                } else {
-                   Log.i("denis", "MovieDetailsActivity - addDeleteMovieFavorites - Error to remove. deleteCount: "+deleteCount);
+                   Log.i("MovieDetailsActivity", "addDeleteMovieFavorites() - Error to remove. deleteCount: "+deleteCount);
                    Toast.makeText(this, "Error to remove movie from Favorites", Toast.LENGTH_LONG).show();
                }
 
@@ -246,7 +252,7 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
 
         if (loaderResult == null) {
             //Toast.makeText(this, getString(R.string.check_internet), Toast.LENGTH_LONG).show();
-            Log.i("denis", "MovieDetailsActivity - onLoadFinished returned null Arraylist");
+            Log.i("MovieDetailsActivity", "onLoadFinished() returned null Arraylist");
             return;
         } else {
             //set textViews before trailers and reviews
@@ -322,8 +328,6 @@ public class MovieDetailsActivity extends AppCompatActivity implements LoaderMan
         //saving the scroll position
         ScrollView scrollView = (ScrollView) findViewById(R.id.scrollViewMovieDetails);
         outState.putInt(BUNDLE_SCROLL_POSITION, scrollView.getScrollY());
-
-        Log.i("denis","onSaveInstanceState - trailers_shrinked: "+trailers_shrinked);
     }
 
     @Override

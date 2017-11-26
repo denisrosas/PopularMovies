@@ -51,12 +51,11 @@ public class MoviePosterAdapter extends RecyclerView.Adapter <MoviePosterAdapter
 
             Uri builtUri = returnImageUri(localMovieList.get(position).getPosterPath());
             Picasso.with(activityContext).load(builtUri.toString()).into(iv_holder.imageView);
-            //Log.i("denis", "link da imagem: " + builtUri.toString());
 
         } else {
             //if it's not image file, get fail image from Resources
             Picasso.with(activityContext).load(R.drawable.erro_loading_image).into(iv_holder.imageView);
-            Log.i("denis", "Fail to load the image.");
+            Log.i("onBindViewHolder", "Fail to load the image.");
         }
 
         //create onClickListener to open MovieDetailsActivity
@@ -79,6 +78,9 @@ public class MoviePosterAdapter extends RecyclerView.Adapter <MoviePosterAdapter
                 i.putExtra("extras_string", extras_string);
                 i.putExtra("voteAvarage", voteAvarage);
                 i.putExtra("voteCount", voteCount);
+
+                Log.i("MoviePosterAdapter", "onBindViewHolder() - Movie selected "+movieDetails.getTitle()+" " +
+                        "and movieID "+movieDetails.getId());
 
                 //call the intent
                 activityContext.startActivity(i);

@@ -35,6 +35,7 @@ public class MoviesInfoFromTMDB extends AsyncTaskLoader<ArrayList<MovieDetails>>
             //build the URI
             URL tmdbMoviesRequestUrl = NetworkUtils.buildUrlMovieList(activityContext.getString(R.string.tmdb_api_key));
             String jsonTMDBMovieList = "";
+            Log.i("MoviesInfoFromTMDB", "loadInBackground() - tmdbMoviesRequestUrl: " + tmdbMoviesRequestUrl.toString());
 
             try {
                 //download the JSON in this separated thread
@@ -43,7 +44,7 @@ public class MoviesInfoFromTMDB extends AsyncTaskLoader<ArrayList<MovieDetails>>
 
                 if (jsonTMDBMovieList != null) {
                     //Parse the JSON to get the movie list
-                    Log.i("denis getMoviesInfo", "jsonTMDBMovieList length: " + jsonTMDBMovieList.length());
+                    Log.i("MoviesInfoFromTMDB", "loadInBackground() - Downloaded JSON from TMDB with lenght: " + jsonTMDBMovieList.length());
                     return returnMoviesArrayList(jsonTMDBMovieList);
                 }
 
@@ -67,7 +68,7 @@ public class MoviesInfoFromTMDB extends AsyncTaskLoader<ArrayList<MovieDetails>>
         //download the favorite movies from the ContentPrivider
         Cursor cursor = activityContext.getContentResolver().query(uri, null, null, null, null);
 
-        Log.i("denis", "getFavoriteMoviesFromContProv() - "+cursor.getCount()+" favorite movies found in database");
+        Log.i("MoviesInfoFromTMDB", "getFavoriteMoviesFromContProv() - "+cursor.getCount()+" favorite movies found in database");
 
         if(cursor.getCount()==0) {
             return favoriteMovies;
@@ -104,12 +105,12 @@ public class MoviesInfoFromTMDB extends AsyncTaskLoader<ArrayList<MovieDetails>>
         JSONArray jsonArray;
         ArrayList<MovieDetails> movieDetailsList = new ArrayList<>();
         int maxTitleSize=0, maxOverviewSize=0;
-        String maxTitle = "", maxOverviewName="";
-
 
         try {
             jsonObject = new JSONObject(jsonToParse);
             jsonArray = jsonObject.getJSONArray("results");
+            Log.i("MoviesInfoFromTMDB", "returnMoviesArrayList() - Successfully found JSON Array \"results\"" +
+                    " in JSON Object of size: "+jsonArray.length());
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -128,16 +129,6 @@ public class MoviesInfoFromTMDB extends AsyncTaskLoader<ArrayList<MovieDetails>>
                             jsonObject.getString(activityContext.getString(R.string.json_tmdb_posterpath)).replaceFirst("/",""),
                             jsonObject.getString(activityContext.getString(R.string.json_tmdb_overview)),
                             jsonObject.getString(activityContext.getString(R.string.json_tmdb_release_date))));
-
-                    if(movieDetailsList.get(index).getTitle().length() > maxTitleSize){
-                        maxTitleSize = movieDetailsList.get(index).getTitle().length();
-                        maxTitle = movieDetailsList.get(index).getTitle();
-                    }
-
-                    if(movieDetailsList.get(index).getOverview().length() > maxOverviewSize){
-                        maxOverviewSize = movieDetailsList.get(index).getOverview().length();
-                        maxOverviewName = movieDetailsList.get(index).getOverview();
-                    }
 
                 } catch (JSONException e) {
                     e.printStackTrace();

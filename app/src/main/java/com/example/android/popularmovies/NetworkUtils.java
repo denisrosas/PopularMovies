@@ -70,9 +70,6 @@ final class NetworkUtils {
             e.printStackTrace();
             return null;
         }
-
-        Log.i("denis buildUrlMovieList", "url: " + url.toString());
-
         return url;
     }
 
@@ -108,7 +105,6 @@ final class NetworkUtils {
 
         //request page 1 because at first we don't know the page count. We'll know after download the first JSON
         url = buildUrlReviewList(api_key, movieID, 1);
-        Log.i("denis buildUrl", "buildAndDownloadReviewsList() page 1 url: " + url.toString());
 
         //Download JSON of Reviews
         try {
@@ -123,7 +119,7 @@ final class NetworkUtils {
             if(total_pages>0)
                 jsonArray = jsonObject.getJSONArray(JSON_REVIEW_RESULTS);
             else {
-                Log.i("denis ", "No Reviews Found for this movie!!!!");
+                Log.i("NetworkUtils ", "buildAndDownloadReviewsList() - No Reviews Found for this movie!!!!");
                 return null;
             }
         } catch (IOException | JSONException e) {
@@ -143,7 +139,6 @@ final class NetworkUtils {
         if(total_pages>1){
             for(int current_page = 2; current_page<=total_pages; current_page++){
                 url = buildUrlReviewList(api_key, movieID, current_page);
-                Log.i("denis buildUrl", "buildAndDownloadReviewsList() page 2 url: " + url.toString());
                 try {
                     //download JSON from the built URI
                     String jsonTMDBReviewList = getResponseFromHttpUrl(url);
@@ -212,7 +207,6 @@ final class NetworkUtils {
 
         //build the url to download the trailer list from TMDB
         url = buildUrlTrailerList(api_key, movieID);
-        Log.i("denis buildUrl", "buildAndDownloadTrailerList() url: " + url.toString());
 
         //Download JSON of Trailers
         try {
@@ -231,7 +225,6 @@ final class NetworkUtils {
         for(int index=0; index<jsonArray.length(); index++){
             try{
                 trailerList.add(parseJSONGetTrailerList(jsonArray.getJSONObject(index)));
-                //Log.i("denis Trailer", "trailerList posicao "+index+" armazenou: "+trailerList.get(index));
             } catch (Exception e){
                 e.printStackTrace();
             }
@@ -246,7 +239,6 @@ final class NetworkUtils {
         try {
 
             //if the video parsed is a Youtube Video
-//            Log.i("denis parse trailer","string1: "+ string1+" youtube: "+JSON_VIDEOS_YOUTUBE);
             if (jsonObject.getString(JSON_VIDEOS_SITE).equals(JSON_VIDEOS_YOUTUBE)){
 
                 //get the video key
@@ -298,7 +290,7 @@ final class NetworkUtils {
 
         if(!returnBool) {
             Toast.makeText(activityContext, activityContext.getString(R.string.check_internet), Toast.LENGTH_LONG).show();
-            Log.i("denis", "isNetworkConnected() - Network connection check Failed. No Internet Connection");
+            Log.i("NetworkUtils", "isNetworkConnected() - Network connection check Failed. No Internet Connection");
         }
         return returnBool;
     }

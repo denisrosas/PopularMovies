@@ -67,8 +67,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        Log.i("denis Mainactivity", "onOptionsItemSelected - : item_id: "+item.getItemId());
-
         if((item.getItemId() == R.id.sort_by_popularity)||
                 (item.getItemId()==R.id.sort_by_top_rated)||
                 (item.getItemId()==R.id.my_favorite_movies)) {
@@ -83,9 +81,18 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             }
 
             //set sortType global variable
-            if(item.getItemId() == R.id.sort_by_popularity)  {sortType = SORT_BY_POPULARITY;}
-            else if (item.getItemId() == R.id.sort_by_top_rated) {sortType = SORT_BY_TOP_RATED;}
-            else if (item.getItemId() == R.id.my_favorite_movies) {sortType = SORT_BY_FAVORITES;}
+            if(item.getItemId() == R.id.sort_by_popularity)  {
+                sortType = SORT_BY_POPULARITY;
+                Log.i("MainActivity","onOptionsItemSelected() - User selected SORT_BY_POPULARITY");
+            }
+            else if (item.getItemId() == R.id.sort_by_top_rated) {
+                sortType = SORT_BY_TOP_RATED;
+                Log.i("MainActivity","onOptionsItemSelected() - User selected SORT_BY_TOP_RATED");
+            }
+            else if (item.getItemId() == R.id.my_favorite_movies) {
+                sortType = SORT_BY_FAVORITES;
+                Log.i("MainActivity","onOptionsItemSelected() - User selected SORT_BY_FAVORITES");
+            }
 
             //clear the recyclerview and start Loader Task to do load the movie lists again
             clearRecyclerView();
